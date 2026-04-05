@@ -134,3 +134,5 @@ DATABASES['default'] = dj_database_url.config(
     default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
     conn_max_age=600
 )
+
+CSRF_TRUSTED_ORIGINS = ['https://web-production-a7d7.up.railway.app']
