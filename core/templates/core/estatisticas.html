@@ -1,0 +1,291 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Estatísticas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a { margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold; }
+        .logout-btn { background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; }
+
+        main { flex:1; padding:40px 40px; max-width:1000px; margin:0 auto; width:100%; }
+
+        h2 { color:white; font-size:28px; margin-bottom:30px; text-align:center; }
+
+        /* ── CARDS DE RESUMO ── */
+        .resumo {
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+            gap:20px;
+            margin-bottom:30px;
+        }
+        .resumo-card {
+            background:#F7EFEC;
+            border-radius:20px;
+            padding:25px;
+            text-align:center;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+        .resumo-card .valor {
+            font-size:42px;
+            font-weight:bold;
+            color:#A2827A;
+            margin-bottom:5px;
+        }
+        .resumo-card .label {
+            font-size:14px;
+            color:#b0908a;
+        }
+        .resumo-card .emoji { font-size:30px; margin-bottom:8px; display:block; }
+
+        /* humor médio em emoji */
+        .humor-emoji { font-size:48px !important; }
+
+        /* ── GRÁFICOS ── */
+        .graficos {
+            display:grid;
+            grid-template-columns:1fr;
+            gap:25px;
+        }
+        .grafico-card {
+            background:#F7EFEC;
+            border-radius:20px;
+            padding:30px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+        .grafico-card h3 {
+            color:#A2827A;
+            font-size:18px;
+            margin-bottom:20px;
+            text-align:center;
+        }
+
+        .grafico-linha { height:280px; }
+        .grafico-circular-wrapper {
+            display:flex;
+            justify-content:center;
+        }
+        .grafico-circular { max-width:300px; max-height:300px; }
+
+        .sem-dados {
+            text-align:center;
+            color:#b0908a;
+            font-size:15px;
+            padding:30px;
+        }
+
+        .btn-voltar {
+            display:block;
+            width:fit-content;
+            margin:25px auto 0 auto;
+            padding:11px 28px;
+            background:transparent;
+            border:2px solid #F7EFEC;
+            border-radius:50px;
+            color:white;
+            font-size:14px;
+            text-decoration:none;
+            transition:0.3s;
+        }
+        .btn-voltar:hover { background:rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'home' %}">Início</a>
+        <a href="{% url 'perfil' %}">Perfil</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+    <h2>📊 As minhas Estatísticas</h2>
+
+    <!-- RESUMO -->
+    <div class="resumo">
+        <div class="resumo-card">
+            <span class="emoji">📝</span>
+            <div class="valor">{{ total_registos }}</div>
+            <div class="label">Registos de humor</div>
+        </div>
+
+        <div class="resumo-card">
+            <span class="emoji">📅</span>
+            <div class="valor">Últimos 30 dias</div>
+            <div class="label">Período analisado</div>
+        </div>
+
+        <div class="resumo-card">
+            {% if media_semana %}
+                <span class="emoji humor-emoji">
+                    {% if media_semana >= 4.5 %}😄
+                    {% elif media_semana >= 3.5 %}🙂
+                    {% elif media_semana >= 2.5 %}😐
+                    {% elif media_semana >= 1.5 %}😕
+                    {% else %}😢
+                    {% endif %}
+                </span>
+                <div class="valor">{{ media_semana }}</div>
+                <div class="label">Humor médio esta semana</div>
+            {% else %}
+                <span class="emoji">🤔</span>
+                <div class="valor" style="font-size:18px;">Sem dados</div>
+                <div class="label">Regista o teu humor esta semana!</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- GRÁFICOS -->
+    <div class="graficos">
+
+        <!-- GRÁFICO DE LINHA -->
+        <div class="grafico-card">
+            <h3>📈 Evolução do Humor (últimos 30 dias)</h3>
+            {% if total_registos > 0 %}
+                <div class="grafico-linha">
+                    <canvas id="graficoLinha"></canvas>
+                </div>
+            {% else %}
+                <div class="sem-dados">Ainda não tens registos de humor suficientes. Começa a registar o teu humor diariamente! 😊</div>
+            {% endif %}
+        </div>
+
+        <!-- GRÁFICO CIRCULAR -->
+        <div class="grafico-card">
+            <h3>🥧 Distribuição de Humores</h3>
+            {% if total_registos > 0 %}
+                <div class="grafico-circular-wrapper">
+                    <canvas id="graficoCircular" class="grafico-circular"></canvas>
+                </div>
+            {% else %}
+                <div class="sem-dados">Sem dados para mostrar ainda.</div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <a href="{% url 'home' %}" class="btn-voltar">← Voltar ao Início</a>
+</main>
+
+<script>
+    const labels  = {{ labels|safe }};
+    const valores = {{ valores|safe }};
+    const contagem = {{ contagem_humores|safe }};
+
+    // cores por humor
+    const coresHumor = ['#d9534f','#f0ad4e','#aaaaaa','#5bc0de','#5cb85c'];
+    const nomesHumor = ['Muito Mau 😢','Mau 😕','Neutro 😐','Bom 🙂','Muito Bom 😄'];
+
+    // ── GRÁFICO DE LINHA ──
+    if (document.getElementById('graficoLinha')) {
+        new Chart(document.getElementById('graficoLinha'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Humor',
+                    data: valores,
+                    borderColor: '#A2827A',
+                    backgroundColor: 'rgba(162,130,122,0.15)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#A2827A',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    fill: true,
+                    tension: 0.4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: 1, max: 5,
+                        ticks: {
+                            stepSize: 1,
+                            callback: val => ['','😢','😕','😐','🙂','😄'][val] || val,
+                            font: { size: 16 }
+                        },
+                        grid: { color: 'rgba(162,130,122,0.15)' }
+                    },
+                    x: {
+                        ticks: { font: { size: 11 } },
+                        grid: { color: 'rgba(162,130,122,0.1)' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => {
+                                const emojis = ['','😢','😕','😐','🙂','😄'];
+                                return ` ${emojis[ctx.raw]} ${nomesHumor[ctx.raw - 1]}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // ── GRÁFICO CIRCULAR ──
+    if (document.getElementById('graficoCircular')) {
+        new Chart(document.getElementById('graficoCircular'), {
+            type: 'doughnut',
+            data: {
+                labels: nomesHumor,
+                datasets: [{
+                    data: contagem,
+                    backgroundColor: coresHumor,
+                    borderColor: '#F7EFEC',
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { size: 13 },
+                            color: '#6b4f4b',
+                            padding: 15,
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.label}: ${ctx.raw} registos`
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

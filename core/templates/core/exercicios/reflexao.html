@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Reflexão do Dia</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a { margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold; }
+        .logout-btn { background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; }
+
+        main { flex:1; display:flex; flex-direction:column; align-items:center; padding:40px 20px; }
+        h2 { color:white; font-size:26px; margin-bottom:8px; }
+        .subtitulo { color:#f0e6e2; font-size:14px; margin-bottom:30px; text-align:center; max-width:500px; line-height:1.6; }
+
+        /* ── TABS ── */
+        .tabs {
+            display:flex;
+            gap:10px;
+            margin-bottom:30px;
+        }
+        .tab-btn {
+            padding:10px 25px;
+            border:2px solid #F7EFEC;
+            border-radius:50px;
+            background:transparent;
+            color:white;
+            font-size:15px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+        .tab-btn.ativo { background:#F7EFEC; color:#A2827A; }
+        .tab-btn:hover { background:rgba(255,255,255,0.15); }
+        .tab-btn.ativo:hover { background:#F7EFEC; }
+
+        /* ── FORMULÁRIO ── */
+        .form-container {
+            background:#F7EFEC;
+            border-radius:25px;
+            padding:40px;
+            max-width:600px;
+            width:100%;
+            box-shadow:0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .pergunta-grupo { margin-bottom:25px; }
+        .pergunta-label {
+            font-size:16px;
+            font-weight:bold;
+            color:#A2827A;
+            margin-bottom:10px;
+            display:block;
+        }
+        .pergunta-label span { font-size:20px; margin-right:8px; }
+
+        textarea {
+            width:100%;
+            padding:14px;
+            border-radius:12px;
+            border:none;
+            background:#EDE0DB;
+            font-size:15px;
+            resize:none;
+            color:#5a3e3a;
+            line-height:1.6;
+            transition:0.2s;
+        }
+        textarea:focus { outline:2px solid #A2827A; background:#e5d5d0; }
+        textarea::placeholder { color:#b0908a; }
+
+        .btn-guardar {
+            width:100%;
+            padding:14px;
+            background:#A2827A;
+            color:white;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+            margin-top:5px;
+        }
+        .btn-guardar:hover { background:#8c6f67; transform:translateY(-2px); }
+
+        /* ── HISTÓRICO ── */
+        .historico-container {
+            max-width:600px;
+            width:100%;
+            display:none;
+        }
+
+        .data-grupo { margin-bottom:30px; }
+        .data-titulo {
+            color:white;
+            font-size:14px;
+            font-weight:bold;
+            margin-bottom:12px;
+            padding:6px 15px;
+            background:rgba(247,239,236,0.2);
+            border-radius:20px;
+            display:inline-block;
+        }
+
+        .reflexao-card {
+            background:#F7EFEC;
+            border-radius:15px;
+            padding:18px 22px;
+            margin-bottom:10px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.08);
+        }
+        .reflexao-card .pergunta {
+            font-size:13px;
+            color:#b0908a;
+            font-weight:bold;
+            margin-bottom:6px;
+        }
+        .reflexao-card .resposta {
+            font-size:15px;
+            color:#6b4f4b;
+            line-height:1.6;
+        }
+
+        .sem-reflexoes {
+            text-align:center;
+            color:white;
+            font-size:16px;
+            opacity:0.8;
+            margin-top:20px;
+        }
+
+        .btn-voltar {
+            margin-top:25px;
+            padding:10px 25px;
+            background:transparent;
+            border:2px solid #F7EFEC;
+            border-radius:50px;
+            color:white;
+            font-size:14px;
+            text-decoration:none;
+            display:inline-block;
+            transition:0.3s;
+        }
+        .btn-voltar:hover { background:rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'exercicios' %}">← Exercícios</a>
+        <a href="{% url 'home' %}">Início</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+    <h2>💭 Reflexão do Dia</h2>
+    <p class="subtitulo">Tira uns minutos para refletir sobre o teu dia. Não há respostas certas ou erradas.</p>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn ativo" id="tab-hoje" onclick="mostrarTab('hoje')">✏️ Refletir agora</button>
+        <button class="tab-btn" id="tab-historico" onclick="mostrarTab('historico')">📖 Ver histórico</button>
+    </div>
+
+    <!-- FORMULÁRIO -->
+    <div class="form-container" id="secao-hoje">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="pergunta-grupo">
+                <label class="pergunta-label"><span>🌟</span>O que correu bem hoje?</label>
+                <textarea name="resposta_0" rows="3" placeholder="Escreve aqui..."></textarea>
+            </div>
+
+            <div class="pergunta-grupo">
+                <label class="pergunta-label"><span>💪</span>O que foi desafiante hoje?</label>
+                <textarea name="resposta_1" rows="3" placeholder="Escreve aqui..."></textarea>
+            </div>
+
+            <div class="pergunta-grupo">
+                <label class="pergunta-label"><span>🙏</span>Pelo que estou grato(a) hoje?</label>
+                <textarea name="resposta_2" rows="3" placeholder="Escreve aqui..."></textarea>
+            </div>
+
+            <div class="pergunta-grupo">
+                <label class="pergunta-label"><span>📚</span>O que aprendi hoje?</label>
+                <textarea name="resposta_3" rows="3" placeholder="Escreve aqui..."></textarea>
+            </div>
+
+            <div class="pergunta-grupo">
+                <label class="pergunta-label"><span>🌱</span>O que quero melhorar amanhã?</label>
+                <textarea name="resposta_4" rows="3" placeholder="Escreve aqui..."></textarea>
+            </div>
+
+            <button class="btn-guardar" type="submit">💾 Guardar Reflexão</button>
+        </form>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div class="historico-container" id="secao-historico">
+        {% if reflexoes_anteriores %}
+            {% regroup reflexoes_anteriores by data|date:"d/m/Y" as reflexoes_por_data %}
+            {% for grupo in reflexoes_por_data %}
+                <div class="data-grupo">
+                    <div class="data-titulo">📅 {{ grupo.grouper }}</div>
+                    {% for r in grupo.list %}
+                        <div class="reflexao-card">
+                            <div class="pergunta">{{ r.pergunta }}</div>
+                            <div class="resposta">{{ r.resposta }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="sem-reflexoes">Ainda não tens reflexões guardadas. Começa agora! 💭</p>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'exercicios' %}" class="btn-voltar">← Voltar aos Exercícios</a>
+</main>
+
+<script>
+    function mostrarTab(tab) {
+        document.getElementById('secao-hoje').style.display = tab === 'hoje' ? 'block' : 'none';
+        document.getElementById('secao-historico').style.display = tab === 'historico' ? 'block' : 'none';
+        document.getElementById('tab-hoje').classList.toggle('ativo', tab === 'hoje');
+        document.getElementById('tab-historico').classList.toggle('ativo', tab === 'historico');
+    }
+</script>
+
+</body>
+</html>

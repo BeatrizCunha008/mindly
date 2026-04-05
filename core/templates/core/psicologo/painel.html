@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Painel do Psicólogo</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a { margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold; }
+        .logout-btn { background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; }
+
+        main { flex:1; padding:40px; max-width:900px; margin:0 auto; width:100%; }
+        h2 { color:white; font-size:28px; margin-bottom:8px; text-align:center; }
+        .subtitulo { color:#f0e6e2; font-size:14px; margin-bottom:30px; text-align:center; }
+
+        /* ── RESUMO ── */
+        .resumo-card {
+            background:#F7EFEC;
+            border-radius:20px;
+            padding:25px 35px;
+            margin-bottom:30px;
+            display:flex;
+            align-items:center;
+            gap:20px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+        .resumo-card .icone { font-size:45px; }
+        .resumo-card h3 { color:#A2827A; font-size:20px; margin-bottom:4px; }
+        .resumo-card p { color:#b0908a; font-size:14px; }
+
+        /* ── LISTA DE PACIENTES ── */
+        .pacientes-lista { display:flex; flex-direction:column; gap:15px; }
+
+        .paciente-card {
+            background:#F7EFEC;
+            border-radius:20px;
+            padding:22px 28px;
+            display:flex;
+            align-items:center;
+            gap:20px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.08);
+            text-decoration:none;
+            transition:0.3s;
+        }
+        .paciente-card:hover { transform:translateY(-3px); background:#ede0db; }
+
+        .paciente-foto {
+            width:55px; height:55px;
+            border-radius:50%;
+            background:#EDE0DB;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:25px;
+            border:3px solid #A2827A;
+            overflow:hidden;
+            flex-shrink:0;
+        }
+        .paciente-foto img { width:100%; height:100%; object-fit:cover; }
+
+        .paciente-info { flex:1; }
+        .paciente-info .nome { font-size:17px; font-weight:bold; color:#A2827A; margin-bottom:3px; }
+        .paciente-info .username { font-size:13px; color:#b0908a; }
+
+        .paciente-seta { font-size:20px; color:#A2827A; }
+
+        .sem-pacientes {
+            text-align:center;
+            color:white;
+            font-size:16px;
+            opacity:0.8;
+            margin-top:20px;
+            background:rgba(247,239,236,0.15);
+            border-radius:20px;
+            padding:40px;
+        }
+
+        .btn-voltar {
+            display:block;
+            text-align:center;
+            margin-top:25px;
+            padding:11px;
+            background:transparent;
+            border:2px solid #F7EFEC;
+            border-radius:50px;
+            color:white;
+            font-size:14px;
+            text-decoration:none;
+            transition:0.3s;
+        }
+        .btn-voltar:hover { background:rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'home' %}">Início</a>
+        <a href="{% url 'perfil' %}">Perfil</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+    <h2>🩺 Painel do Psicólogo</h2>
+    <p class="subtitulo">Bem-vindo(a), Dr(a). {{ request.user.first_name }}. Aqui podes acompanhar os teus pacientes.</p>
+
+    <!-- RESUMO -->
+    <div class="resumo-card">
+        <div class="icone">👥</div>
+        <div>
+            <h3>{{ relacoes|length }} paciente{{ relacoes|length|pluralize:"s" }} ativo{{ relacoes|length|pluralize:"s" }}</h3>
+            <p>Clica num paciente para ver as suas estatísticas de humor</p>
+        </div>
+    </div>
+
+    <!-- LISTA DE PACIENTES -->
+    {% if relacoes %}
+        <div class="pacientes-lista">
+            {% for relacao in relacoes %}
+                <a class="paciente-card" href="{% url 'detalhe_paciente' relacao.paciente.pk %}">
+                    <div class="paciente-foto">
+                        {% if relacao.paciente.perfil.foto_perfil %}
+                            <img src="{{ relacao.paciente.perfil.foto_perfil.url }}" alt="foto">
+                        {% else %}
+                            👤
+                        {% endif %}
+                    </div>
+                    <div class="paciente-info">
+                        <div class="nome">
+                            {% if relacao.paciente.first_name %}
+                                {{ relacao.paciente.first_name }} {{ relacao.paciente.last_name }}
+                            {% else %}
+                                {{ relacao.paciente.username }}
+                            {% endif %}
+                        </div>
+                        <div class="username">@{{ relacao.paciente.username }}</div>
+                    </div>
+                    <div class="paciente-seta">→</div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="sem-pacientes">
+            <p>Ainda não tens pacientes associados.</p>
+            <p style="margin-top:8px; font-size:14px;">Os pacientes podem associar-se a ti através do teu email: <strong>{{ request.user.email }}</strong></p>
+        </div>
+    {% endif %}
+
+    <a href="{% url 'home' %}" class="btn-voltar">← Voltar ao Início</a>
+</main>
+
+</body>
+</html>

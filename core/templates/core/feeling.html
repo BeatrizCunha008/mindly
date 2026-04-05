@@ -1,0 +1,331 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Frases de Motivação</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a { margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold; }
+        .logout-btn { background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; }
+
+        main {
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            padding:40px 20px;
+        }
+
+        h2 { color:white; font-size:26px; margin-bottom:8px; }
+        .subtitulo { color:#f0e6e2; font-size:14px; margin-bottom:35px; text-align:center; }
+
+        /* ── ECRÃ ESCOLHA ── */
+        .ecra-escolha { text-align:center; max-width:560px; width:100%; animation: aparecer 0.5s ease; }
+
+        .topicos {
+            display:grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap:15px;
+            margin-bottom:20px;
+        }
+        .topico-btn {
+            background:#F7EFEC;
+            border:none;
+            border-radius:20px;
+            padding:22px 15px;
+            cursor:pointer;
+            transition:0.3s;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            gap:10px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+        .topico-btn:hover { background:#ede0db; transform:translateY(-3px); }
+        .topico-btn.selecionado { background:#A2827A; color:white; }
+        .topico-btn .icone { font-size:35px; }
+        .topico-btn .nome { font-size:15px; font-weight:bold; color:#A2827A; }
+        .topico-btn.selecionado .nome { color:white; }
+
+        .btn-ver {
+            width:100%;
+            padding:14px;
+            background:#A2827A;
+            color:white;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+            margin-top:5px;
+        }
+        .btn-ver:hover { background:#8c6f67; transform:translateY(-2px); }
+        .btn-ver:disabled { background:#ccc; cursor:not-allowed; transform:none; }
+
+        /* ── ECRÃ FRASE ── */
+        .ecra-frase {
+            display:none;
+            text-align:center;
+            max-width:560px;
+            width:100%;
+            animation: aparecer 0.5s ease;
+        }
+
+        .topico-badge {
+            display:inline-block;
+            background:rgba(247,239,236,0.25);
+            color:white;
+            font-size:13px;
+            font-weight:bold;
+            padding:6px 18px;
+            border-radius:20px;
+            margin-bottom:20px;
+        }
+
+        .card-frase {
+            background:#F7EFEC;
+            border-radius:25px;
+            padding:50px 40px;
+            box-shadow:0 8px 25px rgba(0,0,0,0.15);
+            margin-bottom:30px;
+            animation: aparecer 0.5s ease;
+        }
+        .aspas-abre { font-size:55px; color:#EDE0DB; line-height:0.5; text-align:left; display:block; margin-bottom:10px; }
+        .texto-frase { font-size:21px; color:#6b4f4b; font-style:italic; line-height:1.8; margin-bottom:20px; }
+        .autor-frase { font-size:14px; color:#b0908a; font-weight:bold; }
+
+        /* botões de resposta */
+        .botoes-resposta {
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        }
+        .btn-melhor {
+            padding:15px;
+            background:#A2827A;
+            color:white;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+            text-decoration:none;
+            display:block;
+        }
+        .btn-melhor:hover { background:#8c6f67; transform:translateY(-2px); }
+        .btn-mais {
+            padding:15px;
+            background:#F7EFEC;
+            color:#A2827A;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+        .btn-mais:hover { background:#ede0db; transform:translateY(-2px); }
+
+        @keyframes aparecer {
+            from { opacity:0; transform:translateY(20px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'home' %}">Início</a>
+        <a href="{% url 'perfil' %}">Perfil</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+
+    <!-- ECRÃ ESCOLHA DO TÓPICO -->
+    <div class="ecra-escolha" id="ecraEscolha">
+        <h2>💬 Do que precisas agora?</h2>
+        <p class="subtitulo">Escolhe o que o teu coração precisa de ouvir hoje.</p>
+
+        <div class="topicos">
+            <button class="topico-btn" onclick="selecionarTopico('forca', this)">
+                <span class="icone">💪</span>
+                <span class="nome">Força e Coragem</span>
+            </button>
+            <button class="topico-btn" onclick="selecionarTopico('paz', this)">
+                <span class="icone">🕊️</span>
+                <span class="nome">Paz e Calma</span>
+            </button>
+            <button class="topico-btn" onclick="selecionarTopico('crescimento', this)">
+                <span class="icone">🌱</span>
+                <span class="nome">Crescimento</span>
+            </button>
+            <button class="topico-btn" onclick="selecionarTopico('felicidade', this)">
+                <span class="icone">😊</span>
+                <span class="nome">Felicidade</span>
+            </button>
+            <button class="topico-btn" onclick="selecionarTopico('autoestima', this)">
+                <span class="icone">🌸</span>
+                <span class="nome">Autoestima</span>
+            </button>
+            <button class="topico-btn" onclick="selecionarTopico('esperanca', this)">
+                <span class="icone">✨</span>
+                <span class="nome">Esperança</span>
+            </button>
+        </div>
+
+        <button class="btn-ver" id="btnVer" onclick="mostrarFrase()" disabled>Ver a minha frase →</button>
+    </div>
+
+    <!-- ECRÃ FRASE -->
+    <div class="ecra-frase" id="ecraFrase">
+        <div class="topico-badge" id="topicoBadge"></div>
+
+        <div class="card-frase" id="cardFrase">
+            <span class="aspas-abre">"</span>
+            <div class="texto-frase" id="textoFrase"></div>
+            <div class="autor-frase" id="autorFrase"></div>
+        </div>
+
+        <div class="botoes-resposta">
+            <a href="{% url 'home' %}" class="btn-melhor">😊 Obrigada! Muito melhor</a>
+            <button class="btn-mais" onclick="outraFrase()">💭 Acho que preciso de mais uma...</button>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    const frases = {
+        forca: [
+            { texto: "Cai sete vezes, levanta oito.", autor: "Provérbio Japonês" },
+            { texto: "A coragem não é a ausência do medo, mas seguir em frente apesar dele.", autor: "Nelson Mandela" },
+            { texto: "Não precisas de ser perfeito(a) para ser incrível.", autor: "Desconhecido" },
+            { texto: "Acredita em ti mesmo e em tudo o que és.", autor: "Christian D. Larson" },
+            { texto: "A maior glória não está em nunca cair, mas em nos levantarmos sempre.", autor: "Confúcio" },
+            { texto: "És mais forte do que pensas e mais capaz do que imaginas.", autor: "Desconhecido" },
+        ],
+        paz: [
+            { texto: "A paz começa com um sorriso.", autor: "Madre Teresa" },
+            { texto: "A calma é a tua superpotência.", autor: "Desconhecido" },
+            { texto: "A mente tranquila é mais valiosa do que mil conquistas.", autor: "Desconhecido" },
+            { texto: "Respirar fundo é um ato de amor próprio.", autor: "Desconhecido" },
+            { texto: "Solta o que não podes controlar. Abraça o que podes.", autor: "Desconhecido" },
+            { texto: "O teu valor não se mede pela tua produtividade.", autor: "Desconhecido" },
+        ],
+        crescimento: [
+            { texto: "Não esperes pelo momento perfeito. Pega no momento e torna-o perfeito.", autor: "Zoey Sayward" },
+            { texto: "Sê a mudança que queres ver no mundo.", autor: "Mahatma Gandhi" },
+            { texto: "Pequenos progressos são ainda progressos.", autor: "Desconhecido" },
+            { texto: "Em cada dia há uma nova oportunidade para recomeçar.", autor: "Desconhecido" },
+            { texto: "O crescimento começa no limite da tua zona de conforto.", autor: "Desconhecido" },
+            { texto: "Cada erro é uma lição disfarçada.", autor: "Desconhecido" },
+        ],
+        felicidade: [
+            { texto: "A felicidade não é algo pronto. Vem das tuas próprias ações.", autor: "Dalai Lama" },
+            { texto: "A vida não é medida pelo número de respirações que damos, mas pelos momentos que nos tiram o fôlego.", autor: "Maya Angelou" },
+            { texto: "Hoje é um bom dia para ter um bom dia.", autor: "Desconhecido" },
+            { texto: "A felicidade não é um destino, é uma forma de viajar.", autor: "Margaret Lee Runbeck" },
+            { texto: "Cada amanhecer traz consigo uma nova oportunidade de ser feliz.", autor: "Desconhecido" },
+            { texto: "A alegria está nas pequenas coisas que escolhemos notar.", autor: "Desconhecido" },
+        ],
+        autoestima: [
+            { texto: "Sê gentil contigo mesmo(a). Estás a fazer o teu melhor.", autor: "Desconhecido" },
+            { texto: "Mereces o mesmo amor que dás aos outros.", autor: "Desconhecido" },
+            { texto: "A tua presença no mundo faz diferença.", autor: "Desconhecido" },
+            { texto: "Não te compares. A tua jornada é única.", autor: "Desconhecido" },
+            { texto: "Cuida de ti como cuidarias de alguém que amas.", autor: "Desconhecido" },
+            { texto: "És suficiente. Exatamente como és.", autor: "Desconhecido" },
+        ],
+        esperanca: [
+            { texto: "Após a tempestade vem sempre a bonança.", autor: "Desconhecido" },
+            { texto: "Amanhã é um novo dia, cheio de possibilidades.", autor: "Desconhecido" },
+            { texto: "Enquanto houver vida, há esperança.", autor: "Cícero" },
+            { texto: "As estrelas só brilham na escuridão.", autor: "Desconhecido" },
+            { texto: "É ok não estar bem. Vai passar. 💛", autor: "Desconhecido" },
+            { texto: "A tua história ainda não terminou.", autor: "Desconhecido" },
+        ],
+    };
+
+    const topicoNome = {
+        forca: '💪 Força e Coragem',
+        paz: '🕊️ Paz e Calma',
+        crescimento: '🌱 Crescimento',
+        felicidade: '😊 Felicidade',
+        autoestima: '🌸 Autoestima',
+        esperanca: '✨ Esperança',
+    };
+
+    let topicoAtual = null;
+    let frasesMostradas = [];
+
+    function selecionarTopico(topico, btn) {
+        topicoAtual = topico;
+        frasesMostradas = [];
+        document.querySelectorAll('.topico-btn').forEach(b => b.classList.remove('selecionado'));
+        btn.classList.add('selecionado');
+        document.getElementById('btnVer').disabled = false;
+    }
+
+    function mostrarFrase() {
+        document.getElementById('ecraEscolha').style.display = 'none';
+        document.getElementById('ecraFrase').style.display = 'block';
+        document.getElementById('topicoBadge').textContent = topicoNome[topicoAtual];
+        mostrarProximaFrase();
+    }
+
+    function mostrarProximaFrase() {
+        const lista = frases[topicoAtual];
+
+        // se já mostrou todas, reinicia
+        if (frasesMostradas.length >= lista.length) frasesMostradas = [];
+
+        // escolhe uma que ainda não foi mostrada
+        const disponiveis = lista.filter((_, i) => !frasesMostradas.includes(i));
+        const idx = lista.indexOf(disponiveis[Math.floor(Math.random() * disponiveis.length)]);
+        frasesMostradas.push(idx);
+
+        const f = lista[idx];
+        document.getElementById('textoFrase').textContent = f.texto;
+        document.getElementById('autorFrase').textContent = '— ' + f.autor;
+
+        // animar card
+        const card = document.getElementById('cardFrase');
+        card.style.animation = 'none';
+        void card.offsetWidth;
+        card.style.animation = 'aparecer 0.5s ease';
+    }
+
+    function outraFrase() {
+        mostrarProximaFrase();
+    }
+</script>
+
+</body>
+</html>

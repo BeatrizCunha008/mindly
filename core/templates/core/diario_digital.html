@@ -1,0 +1,248 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Diário Digital</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        /* ── HEADER ── */
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a {
+            margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold;
+        }
+        .logout-btn {
+            background-color:#A2827A; color:white; padding:8px 16px;
+            border-radius:20px; text-decoration:none; font-weight:bold;
+        }
+
+        /* ── CONTEÚDO ── */
+        main { padding:40px 60px; }
+        h2 { color:white; font-size:28px; margin-bottom:30px; text-align:center; }
+
+        /* ── BOTÃO ADICIONAR ── */
+        .btn-novo {
+            display:block;
+            width:fit-content;
+            margin:0 auto 30px auto;
+            padding:12px 30px;
+            background:#A2827A;
+            color:white;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            text-decoration:none;
+            transition:0.3s;
+        }
+        .btn-novo:hover { background:#8c6f67; transform:translateY(-2px); }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display:none;
+            position:fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            background:rgba(0,0,0,0.5);
+            z-index:100;
+            justify-content:center;
+            align-items:center;
+        }
+        .modal-overlay.ativo { display:flex; }
+        .modal {
+            background:#F7EFEC;
+            border-radius:20px;
+            padding:35px;
+            width:90%;
+            max-width:550px;
+            box-shadow:0 8px 25px rgba(0,0,0,0.2);
+        }
+        .modal h3 { color:#A2827A; font-size:22px; margin-bottom:20px; text-align:center; }
+        .modal input[type="text"] {
+            width:100%;
+            padding:12px;
+            border-radius:12px;
+            border:none;
+            background:#EDE0DB;
+            font-size:16px;
+            margin-bottom:15px;
+            color:#5a3e3a;
+        }
+        .modal textarea {
+            width:100%;
+            padding:12px;
+            border-radius:12px;
+            border:none;
+            background:#EDE0DB;
+            font-size:15px;
+            resize:none;
+            margin-bottom:15px;
+            color:#5a3e3a;
+        }
+        .modal input:focus, .modal textarea:focus { outline:2px solid #A2827A; }
+        .modal-botoes { display:flex; gap:10px; }
+        .btn-guardar {
+            flex:1;
+            padding:12px;
+            background:#A2827A;
+            color:white;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+        .btn-guardar:hover { background:#8c6f67; }
+        .btn-cancelar {
+            flex:1;
+            padding:12px;
+            background:#ccc;
+            color:#555;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+        .btn-cancelar:hover { background:#bbb; }
+
+        /* ── LISTA DE ENTRADAS ── */
+        .entradas-lista {
+            max-width:700px;
+            margin:0 auto;
+            display:flex;
+            flex-direction:column;
+            gap:20px;
+        }
+        .entrada-card {
+            background:#F7EFEC;
+            border-radius:20px;
+            padding:25px 30px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+            position:relative;
+        }
+        .entrada-card .data {
+            font-size:12px;
+            color:#b0908a;
+            margin-bottom:8px;
+        }
+        .entrada-card .titulo {
+            font-size:20px;
+            font-weight:bold;
+            color:#A2827A;
+            margin-bottom:10px;
+        }
+        .entrada-card .texto {
+            font-size:15px;
+            color:#6b4f4b;
+            line-height:1.6;
+            white-space:pre-wrap;
+        }
+        .btn-apagar {
+            position:absolute;
+            top:15px; right:20px;
+            background:none;
+            border:none;
+            color:#c49a95;
+            font-size:20px;
+            cursor:pointer;
+            transition:0.2s;
+        }
+        .btn-apagar:hover { color:#a2827a; transform:scale(1.2); }
+
+        .sem-entradas {
+            text-align:center;
+            color:white;
+            font-size:18px;
+            margin-top:20px;
+            opacity:0.8;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'home' %}">Início</a>
+        <a href="#">Perfil</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+    <h2>O meu Diário Digital 📔</h2>
+
+    <!-- BOTÃO ABRIR MODAL -->
+    <button class="btn-novo" onclick="abrirModal()">+ Nova Entrada</button>
+
+    <!-- MODAL FORMULÁRIO -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h3>Nova Entrada</h3>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="titulo" placeholder="Título da entrada..." required>
+                <textarea name="texto" rows="6" placeholder="Escreve aqui o teu pensamento..." required></textarea>
+                <div class="modal-botoes">
+                    <button class="btn-guardar" type="submit">Guardar</button>
+                    <button class="btn-cancelar" type="button" onclick="fecharModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LISTA DE ENTRADAS -->
+    {% if entradas %}
+        <div class="entradas-lista">
+            {% for entrada in entradas %}
+                <div class="entrada-card">
+                    <div class="data">{{ entrada.data|date:"d/m/Y H:i" }}</div>
+                    <div class="titulo">{{ entrada.titulo }}</div>
+                    <div class="texto">{{ entrada.texto }}</div>
+                    <a href="{% url 'apagar_entrada' entrada.pk %}" class="btn-apagar" title="Apagar">🗑️</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="sem-entradas">Ainda não tens entradas no diário. Escreve a tua primeira! 📝</p>
+    {% endif %}
+</main>
+
+<script>
+    function abrirModal() {
+        document.getElementById('modalOverlay').classList.add('ativo');
+    }
+    function fecharModal() {
+        document.getElementById('modalOverlay').classList.remove('ativo');
+    }
+    // fechar modal ao clicar fora
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) fecharModal();
+    });
+</script>
+
+</body>
+</html>

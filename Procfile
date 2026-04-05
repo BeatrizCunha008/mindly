@@ -1,0 +1,1 @@
+web: gunicorn mindly_project.wsgi

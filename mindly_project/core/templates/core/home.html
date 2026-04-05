@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Página Inicial</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial,sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+
+        header nav a {
+            margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold;
+        }
+        header nav a:hover { text-decoration:underline; }
+
+        .logout-btn {
+            background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold;
+        }
+        .logout-btn:hover { background-color:#8c6f67; }
+
+        .container { display:flex; justify-content:center; flex:1; }
+        main { width:100%; padding:60px; }
+        .hero { text-align:center; }
+        .hero h2 { font-size:32px; font-weight:bold; color:white; margin-bottom:50px; }
+
+        .cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 260px)); gap:40px; justify-content:center; }
+        .card {
+            background-color:#C7B0A9; width:260px; height:130px; border-radius:25px; text-decoration:none; color:#ffffff;
+            display:flex; flex-direction:column; justify-content:center; align-items:center; transition:0.3s;
+        }
+        .card img { width:45px; margin-bottom:10px; }
+        .card p { font-weight:bold; font-size:18px; text-align:center; }
+        .card:hover { background-color:#d3beb8; transform:scale(1.03); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{% static 'core/images/logo.png' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+
+    <nav>
+        <a href="#">Estatísticas</a>
+        <a href="#">Perfil</a>
+        <a class="logout-btn" href="{% url 'logout' %}">Sair</a>
+    </nav>
+</header>
+
+<div class="container">
+    <main>
+        <section class="hero">
+            <h2>Olá, {{ user.username }}! Por onde vamos começar?</h2>
+
+            <div class="cards">
+                <a class="card" href="{% url 'registo_humor' %}">
+                    <img src="{% static 'core/images/smile_1.webp' %}">
+                    <p>Registo de humor</p>
+                </a>
+
+                <a class="card" href="{% url 'diario_digital' %}">
+                    <img src="{% static 'core/images/caderno.png' %}">
+                    <p>Diário digital</p>
+                </a>
+
+                <a class="card" href="{% url 'exercicios' %}">
+                    <img src="{% static 'core/images/peso.png' %}">
+                    <p>Exercícios</p>
+                </a>
+
+                <a class="card" href="{% url 'album' %}">
+                    <img src="{% static 'core/images/camera.png' %}">
+                    <p>Álbum</p>
+                </a>
+
+                <a class="card" href="{% url 'feeling' %}">
+                    <img src="{% static 'core/images/megafone.png' %}">
+                    <p>Frases de motivação</p>
+                </a>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

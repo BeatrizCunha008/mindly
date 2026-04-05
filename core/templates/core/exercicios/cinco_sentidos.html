@@ -1,0 +1,317 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - 5 Sentidos</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a { margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold; }
+        .logout-btn { background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; }
+
+        main {
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            padding:40px 20px;
+        }
+
+        h2 { color:white; font-size:26px; margin-bottom:8px; }
+        .subtitulo { color:#f0e6e2; font-size:14px; margin-bottom:35px; text-align:center; max-width:500px; line-height:1.6; }
+
+        /* ── PROGRESSO ── */
+        .progresso {
+            display:flex;
+            gap:12px;
+            margin-bottom:35px;
+            align-items:center;
+        }
+        .passo-bolinha {
+            width:42px; height:42px;
+            border-radius:50%;
+            background:rgba(247,239,236,0.25);
+            border:2px solid rgba(247,239,236,0.4);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:20px;
+            transition:0.4s;
+        }
+        .passo-bolinha.ativo {
+            background:#F7EFEC;
+            border-color:#F7EFEC;
+            transform:scale(1.2);
+            box-shadow:0 0 18px rgba(247,239,236,0.6);
+        }
+        .passo-bolinha.feito {
+            background:#A2827A;
+            border-color:#A2827A;
+            font-size:16px;
+        }
+
+        /* ── CARD ── */
+        .card-sentido {
+            background:#F7EFEC;
+            border-radius:25px;
+            padding:45px 40px;
+            max-width:540px;
+            width:100%;
+            text-align:center;
+            box-shadow:0 8px 25px rgba(0,0,0,0.15);
+            animation: aparecer 0.5s ease;
+        }
+        @keyframes aparecer {
+            from { opacity:0; transform:translateY(20px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        .sentido-emoji { font-size:75px; margin-bottom:15px; display:block; }
+        .sentido-numero { font-size:13px; color:#b0908a; font-weight:bold; margin-bottom:8px; letter-spacing:1px; text-transform:uppercase; }
+        .sentido-titulo { font-size:26px; font-weight:bold; color:#A2827A; margin-bottom:20px; }
+        .sentido-instrucao { font-size:16px; color:#6b4f4b; line-height:1.9; margin-bottom:25px; }
+
+        /* sugestões */
+        .sugestoes {
+            background:#EDE0DB;
+            border-radius:15px;
+            padding:15px 20px;
+            margin-bottom:28px;
+            text-align:left;
+        }
+        .sugestoes p {
+            font-size:13px;
+            color:#A2827A;
+            font-weight:bold;
+            margin-bottom:8px;
+        }
+        .sugestoes ul {
+            list-style:none;
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+        .sugestoes ul li {
+            font-size:13px;
+            color:#8c6f67;
+            font-style:italic;
+            background:rgba(162,130,122,0.1);
+            padding:4px 12px;
+            border-radius:20px;
+        }
+
+        /* botões */
+        .botoes { display:flex; gap:12px; justify-content:center; }
+        .btn {
+            padding:13px 35px;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+        .btn-proximo { background:#A2827A; color:white; }
+        .btn-proximo:hover { background:#8c6f67; transform:translateY(-2px); }
+
+        /* ── CONCLUSÃO ── */
+        .conclusao {
+            background:#F7EFEC;
+            border-radius:25px;
+            padding:50px 40px;
+            max-width:500px;
+            width:100%;
+            text-align:center;
+            box-shadow:0 8px 25px rgba(0,0,0,0.15);
+            display:none;
+            animation: aparecer 0.5s ease;
+        }
+        .conclusao .estrela { font-size:65px; margin-bottom:15px; display:block; }
+        .conclusao h3 { font-size:26px; color:#A2827A; margin-bottom:15px; }
+        .conclusao p { font-size:16px; color:#6b4f4b; line-height:1.8; margin-bottom:25px; }
+
+        .btn-repetir { background:#EDE0DB; color:#A2827A; }
+        .btn-repetir:hover { background:#d9c9c4; }
+
+        .btn-voltar {
+            margin-top:20px;
+            padding:10px 25px;
+            background:transparent;
+            border:2px solid #F7EFEC;
+            border-radius:50px;
+            color:white;
+            font-size:14px;
+            text-decoration:none;
+            display:inline-block;
+            transition:0.3s;
+        }
+        .btn-voltar:hover { background:rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'exercicios' %}">← Exercícios</a>
+        <a href="{% url 'home' %}">Início</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+    <h2>✋ 5 Sentidos</h2>
+    <p class="subtitulo">Uma técnica de grounding para te trazer ao momento presente. Segue cada passo ao teu ritmo.</p>
+
+    <!-- PROGRESSO -->
+    <div class="progresso" id="progresso">
+        <div class="passo-bolinha ativo" id="bolinha-0">👁️</div>
+        <div class="passo-bolinha" id="bolinha-1">👂</div>
+        <div class="passo-bolinha" id="bolinha-2">✋</div>
+        <div class="passo-bolinha" id="bolinha-3">👃</div>
+        <div class="passo-bolinha" id="bolinha-4">👅</div>
+    </div>
+
+    <!-- CARD -->
+    <div class="card-sentido" id="cardSentido">
+        <span class="sentido-emoji" id="emoji">👁️</span>
+        <div class="sentido-numero" id="numero">Passo 1 de 5</div>
+        <div class="sentido-titulo" id="titulo"></div>
+        <div class="sentido-instrucao" id="instrucao"></div>
+        <div class="sugestoes">
+            <p>💡 Pode ser, por exemplo:</p>
+            <ul id="sugestoesList"></ul>
+        </div>
+        <div class="botoes">
+            <button class="btn btn-proximo" onclick="proximoPasso()">Já encontrei! →</button>
+        </div>
+    </div>
+
+    <!-- CONCLUSÃO -->
+    <div class="conclusao" id="conclusao">
+        <span class="estrela">🌟</span>
+        <h3>Muito bem!</h3>
+        <p>Completaste o exercício dos 5 Sentidos. Espero que te sintas mais presente e tranquilo(a). Lembra-te: podes usar esta técnica em qualquer lugar, sempre que precisares de te ancorar ao momento presente. 💛</p>
+        <div class="botoes">
+            <button class="btn btn-repetir" onclick="reiniciar()">🔄 Repetir</button>
+            <a href="{% url 'exercicios' %}" class="btn btn-proximo" style="text-decoration:none">← Exercícios</a>
+        </div>
+    </div>
+
+    <a href="{% url 'exercicios' %}" class="btn-voltar" id="btnVoltar">← Voltar aos Exercícios</a>
+</main>
+
+<script>
+    const passos = [
+        {
+            emoji: '👁️',
+            titulo: '5 coisas que VEJO',
+            instrucao: 'Olha à tua volta com calma. Encontra <strong>5 coisas</strong> que consegues ver agora mesmo. Observa os detalhes — cores, formas, texturas.',
+            sugestoes: ['uma janela', 'uma cadeira', 'uma planta', 'uma luz', 'o chão']
+        },
+        {
+            emoji: '👂',
+            titulo: '4 coisas que OUÇO',
+            instrucao: 'Fecha os olhos por um momento. Ouve com atenção e identifica <strong>4 sons</strong> diferentes à tua volta.',
+            sugestoes: ['vento', 'passos ao longe', 'a tua respiração', 'um carro']
+        },
+        {
+            emoji: '✋',
+            titulo: '3 coisas que TOCO',
+            instrucao: 'Toca em objetos perto de ti. Presta atenção às <strong>3 texturas ou sensações</strong> diferentes que sentes.',
+            sugestoes: ['a roupa no corpo', 'a superfície da mesa', 'o ar nas mãos']
+        },
+        {
+            emoji: '👃',
+            titulo: '2 coisas que CHEIRO',
+            instrucao: 'Inspira fundo e devagar. Identifica <strong>2 cheiros</strong> que consegues sentir agora.',
+            sugestoes: ['o ar fresco', 'o teu perfume']
+        },
+        {
+            emoji: '👅',
+            titulo: '1 coisa que SABOREO',
+            instrucao: 'Presta atenção à tua boca. Identifica <strong>1 sabor</strong> que consegues sentir neste momento.',
+            sugestoes: ['água', 'café', 'simplesmente o ar']
+        },
+    ];
+
+    let passoAtual = 0;
+
+    function renderPasso() {
+        const p = passos[passoAtual];
+
+        document.getElementById('emoji').textContent = p.emoji;
+        document.getElementById('numero').textContent = `Passo ${passoAtual + 1} de 5`;
+        document.getElementById('titulo').textContent = p.titulo;
+        document.getElementById('instrucao').innerHTML = p.instrucao;
+
+        // sugestões
+        const lista = document.getElementById('sugestoesList');
+        lista.innerHTML = '';
+        p.sugestoes.forEach(s => {
+            const li = document.createElement('li');
+            li.textContent = s;
+            lista.appendChild(li);
+        });
+
+        // bolinhas
+        document.querySelectorAll('.passo-bolinha').forEach((b, i) => {
+            b.classList.remove('ativo', 'feito');
+            if (i < passoAtual) { b.classList.add('feito'); b.textContent = '✓'; }
+            else { b.textContent = passos[i].emoji; }
+            if (i === passoAtual) b.classList.add('ativo');
+        });
+
+        // animar card
+        const card = document.getElementById('cardSentido');
+        card.style.animation = 'none';
+        void card.offsetWidth;
+        card.style.animation = 'aparecer 0.5s ease';
+    }
+
+    function proximoPasso() {
+        if (passoAtual < passos.length - 1) {
+            passoAtual++;
+            renderPasso();
+        } else {
+            document.getElementById('cardSentido').style.display = 'none';
+            document.getElementById('progresso').style.display = 'none';
+            document.getElementById('btnVoltar').style.display = 'none';
+            document.getElementById('conclusao').style.display = 'block';
+        }
+    }
+
+    function reiniciar() {
+        passoAtual = 0;
+        document.getElementById('cardSentido').style.display = 'block';
+        document.getElementById('progresso').style.display = 'flex';
+        document.getElementById('btnVoltar').style.display = 'inline-block';
+        document.getElementById('conclusao').style.display = 'none';
+        renderPasso();
+    }
+
+    renderPasso();
+</script>
+
+</body>
+</html>

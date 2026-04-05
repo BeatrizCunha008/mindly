@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Registo de Humor</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        /* ── HEADER ── */
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a {
+            margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold;
+        }
+        .logout-btn {
+            background-color:#A2827A; color:white; padding:8px 16px;
+            border-radius:20px; text-decoration:none; font-weight:bold;
+        }
+
+        /* ── CONTEÚDO ── */
+        main { padding:40px 60px; }
+
+        h2 { color:white; font-size:28px; margin-bottom:30px; text-align:center; }
+
+        /* ── FORMULÁRIO ── */
+        .form-card {
+            background:#F7EFEC;
+            border-radius:20px;
+            padding:30px;
+            max-width:600px;
+            margin:0 auto 40px auto;
+            box-shadow:0 4px 15px rgba(0,0,0,0.15);
+        }
+        .form-card h3 { color:#A2827A; font-size:20px; margin-bottom:20px; text-align:center; }
+
+        /* emojis de humor */
+        .humor-opcoes {
+            display:flex;
+            justify-content:center;
+            gap:15px;
+            margin-bottom:20px;
+            flex-wrap:wrap;
+        }
+        .humor-opcoes label {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            cursor:pointer;
+            font-size:13px;
+            color:#A2827A;
+            font-weight:bold;
+        }
+        .humor-opcoes input[type="radio"] { display:none; }
+        .humor-opcoes .emoji {
+            font-size:36px;
+            padding:8px;
+            border-radius:50%;
+            transition:0.2s;
+            border:3px solid transparent;
+        }
+        .humor-opcoes input[type="radio"]:checked + .emoji {
+            border-color:#A2827A;
+            background:#e8d9d5;
+        }
+        .humor-opcoes label:hover .emoji { background:#e8d9d5; }
+
+        textarea {
+            width:100%;
+            padding:12px;
+            border-radius:12px;
+            border:none;
+            background:#EDE0DB;
+            font-size:15px;
+            resize:none;
+            margin-bottom:15px;
+            color:#5a3e3a;
+        }
+        textarea:focus { outline:2px solid #A2827A; }
+
+        .btn-guardar {
+            width:100%;
+            padding:12px;
+            background:#A2827A;
+            color:white;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+        .btn-guardar:hover { background:#8c6f67; transform:translateY(-2px); }
+
+        /* ── LISTA DE REGISTOS ── */
+        .registos-lista {
+            max-width:600px;
+            margin:0 auto;
+            display:flex;
+            flex-direction:column;
+            gap:15px;
+        }
+        .registo-item {
+            background:#F7EFEC;
+            border-radius:15px;
+            padding:20px 25px;
+            display:flex;
+            align-items:center;
+            gap:20px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.1);
+        }
+        .registo-emoji { font-size:40px; }
+        .registo-info { flex:1; }
+        .registo-info .humor-label { font-size:16px; font-weight:bold; color:#A2827A; }
+        .registo-info .nota { font-size:14px; color:#7a6460; margin-top:4px; }
+        .registo-info .data { font-size:12px; color:#b0908a; margin-top:4px; }
+
+        .sem-registos {
+            text-align:center;
+            color:white;
+            font-size:18px;
+            margin-top:20px;
+            opacity:0.8;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'home' %}">Início</a>
+        <a href="#">Perfil</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+    <h2>Como te estás a sentir hoje?</h2>
+
+    <!-- FORMULÁRIO -->
+    <div class="form-card">
+        <h3>Registar Humor</h3>
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- emojis em vez do select padrão -->
+            <div class="humor-opcoes">
+                <label>
+                    <input type="radio" name="humor" value="1" required>
+                    <span class="emoji">😢</span>
+                    Muito Mal
+                </label>
+                <label>
+                    <input type="radio" name="humor" value="2">
+                    <span class="emoji">😕</span>
+                    Triste
+                </label>
+                <label>
+                    <input type="radio" name="humor" value="3">
+                    <span class="emoji">😐</span>
+                    Cansada
+                </label>
+                <label>
+                    <input type="radio" name="humor" value="4">
+                    <span class="emoji">🙂</span>
+                    Bem
+                </label>
+                <label>
+                    <input type="radio" name="humor" value="5">
+                    <span class="emoji">😄</span>
+                    Muito Bem
+                </label>
+            </div>
+
+            <textarea name="nota" rows="3" placeholder="Como te estás a sentir? (opcional)"></textarea>
+            <button class="btn-guardar" type="submit">Guardar</button>
+        </form>
+    </div>
+
+    <!-- LISTA DE REGISTOS -->
+    {% if registos %}
+        <div class="registos-lista">
+            {% for r in registos %}
+                <div class="registo-item">
+                    <div class="registo-emoji">
+                        {% if r.humor == 1 %}😢
+                        {% elif r.humor == 2 %}😕
+                        {% elif r.humor == 3 %}😐
+                        {% elif r.humor == 4 %}🙂
+                        {% else %}😄
+                        {% endif %}
+                    </div>
+                    <div class="registo-info">
+                        <div class="humor-label">{{ r.get_humor_display }}</div>
+                        {% if r.nota %}<div class="nota">{{ r.nota }}</div>{% endif %}
+                        <div class="data">{{ r.data|date:"d/m/Y H:i" }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="sem-registos">Ainda não tens registos de humor. Começa agora! 😊</p>
+    {% endif %}
+</main>
+
+</body>
+</html>

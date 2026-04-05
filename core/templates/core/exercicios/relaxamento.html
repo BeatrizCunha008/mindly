@@ -1,0 +1,422 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Relaxamento Muscular</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a { margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold; }
+        .logout-btn { background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; }
+
+        main { flex:1; display:flex; flex-direction:column; align-items:center; padding:30px 20px; }
+        h2 { color:white; font-size:26px; margin-bottom:8px; }
+        .subtitulo { color:#f0e6e2; font-size:14px; margin-bottom:25px; text-align:center; }
+
+        .layout {
+            display:flex;
+            gap:40px;
+            align-items:flex-start;
+            flex-wrap:wrap;
+            justify-content:center;
+            width:100%;
+            max-width:950px;
+        }
+
+        .boneco-container {
+            background:rgba(247,239,236,0.15);
+            border-radius:25px;
+            padding:25px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            gap:10px;
+            backdrop-filter:blur(5px);
+            min-width:220px;
+        }
+        #boneco { width:200px; height:420px; overflow:visible; }
+
+        /* highlight */
+        .hl { transition: fill 0.4s ease; }
+        .hl.ativa { fill: #FFD700 !important; filter: drop-shadow(0 0 6px rgba(255,215,0,0.8)); }
+
+        /* ANIMAÇÕES */
+        #grp-ombros.tensao  { animation: ombros-tensao 7s ease-in-out forwards; }
+        #grp-ombros.relaxa  { animation: ombros-relaxa 1s ease-out forwards; }
+        @keyframes ombros-tensao {
+            0%   { transform: translateY(0); }
+            30%  { transform: translateY(-18px); }
+            100% { transform: translateY(-18px); }
+        }
+        @keyframes ombros-relaxa {
+            0%   { transform: translateY(-18px); }
+            100% { transform: translateY(0); }
+        }
+
+        #grp-braco-esq.tensao { animation: braco-esq-tensao 7s ease-in-out forwards; transform-origin: 55px 118px; }
+        #grp-braco-esq.relaxa { animation: braco-esq-relaxa 1s ease-out forwards; transform-origin: 55px 118px; }
+        #grp-braco-dir.tensao { animation: braco-dir-tensao 7s ease-in-out forwards; transform-origin: 145px 118px; }
+        #grp-braco-dir.relaxa { animation: braco-dir-relaxa 1s ease-out forwards; transform-origin: 145px 118px; }
+        @keyframes braco-esq-tensao {
+            0%   { transform: rotate(0deg); }
+            30%  { transform: rotate(-55deg); }
+            100% { transform: rotate(-55deg); }
+        }
+        @keyframes braco-esq-relaxa {
+            0%   { transform: rotate(-55deg); }
+            100% { transform: rotate(0deg); }
+        }
+        @keyframes braco-dir-tensao {
+            0%   { transform: rotate(0deg); }
+            30%  { transform: rotate(55deg); }
+            100% { transform: rotate(55deg); }
+        }
+        @keyframes braco-dir-relaxa {
+            0%   { transform: rotate(55deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        #grp-mao-esq.tensao { animation: mao-fecha 7s ease-in-out forwards; transform-origin: 55px 195px; }
+        #grp-mao-esq.relaxa { animation: mao-abre 1s ease-out forwards; transform-origin: 55px 195px; }
+        #grp-mao-dir.tensao { animation: mao-fecha 7s ease-in-out forwards; transform-origin: 145px 195px; }
+        #grp-mao-dir.relaxa { animation: mao-abre 1s ease-out forwards; transform-origin: 145px 195px; }
+        @keyframes mao-fecha {
+            0%   { transform: scale(1); }
+            30%  { transform: scale(0.5); }
+            100% { transform: scale(0.5); }
+        }
+        @keyframes mao-abre {
+            0%   { transform: scale(0.5); }
+            60%  { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        #grp-perna-esq.tensao { animation: perna-contrai 7s ease-in-out forwards; transform-origin: 84px 250px; }
+        #grp-perna-esq.relaxa { animation: perna-solta 1s ease-out forwards; transform-origin: 84px 250px; }
+        #grp-perna-dir.tensao { animation: perna-contrai 7s ease-in-out forwards; transform-origin: 116px 250px; }
+        #grp-perna-dir.relaxa { animation: perna-solta 1s ease-out forwards; transform-origin: 116px 250px; }
+        @keyframes perna-contrai {
+            0%   { transform: scaleY(1); }
+            30%  { transform: scaleY(0.82); }
+            100% { transform: scaleY(0.82); }
+        }
+        @keyframes perna-solta {
+            0%   { transform: scaleY(0.82); }
+            100% { transform: scaleY(1); }
+        }
+
+        /* ── PAINEL ── */
+        .painel { display:flex; flex-direction:column; gap:18px; max-width:380px; flex:1; }
+        .zonas { display:flex; flex-wrap:wrap; gap:10px; }
+        .zona-btn {
+            padding:10px 18px; border:2px solid #F7EFEC; border-radius:50px;
+            background:transparent; color:white; font-size:14px; cursor:pointer; transition:0.3s;
+        }
+        .zona-btn.ativa, .zona-btn:hover { background:#F7EFEC; color:#A2827A; }
+
+        .instrucao-card { background:#F7EFEC; border-radius:20px; padding:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+        .instrucao-card h3 { color:#A2827A; font-size:18px; margin-bottom:10px; }
+        .instrucao-card p { color:#6b4f4b; font-size:15px; line-height:1.7; }
+
+        .fase-badge { display:inline-block; padding:6px 16px; border-radius:20px; font-size:15px; font-weight:bold; margin-top:10px; }
+        .fase-tensao { background:#ffcccc; color:#c0392b; }
+        .fase-relaxa { background:#ccf2cc; color:#27ae60; }
+        .fase-ok     { background:#fff3cc; color:#f39c12; }
+
+        .contador-relax { font-size:52px; font-weight:bold; color:#A2827A; text-align:center; margin:8px 0; }
+        .barra { width:100%; height:10px; background:#EDE0DB; border-radius:10px; overflow:hidden; margin-top:8px; }
+        .barra-fill { height:100%; background:#A2827A; border-radius:10px; width:0%; transition: width 0.5s linear; }
+
+        .botoes { display:flex; gap:12px; }
+        .btn { flex:1; padding:12px; border:none; border-radius:50px; font-size:15px; font-weight:bold; cursor:pointer; transition:0.3s; }
+        .btn-iniciar { background:#A2827A; color:white; }
+        .btn-iniciar:hover { background:#8c6f67; }
+        .btn-parar { background:#EDE0DB; color:#A2827A; }
+        .btn-parar:hover { background:#d9c9c4; }
+
+        .btn-voltar {
+            padding:10px 25px; background:transparent; border:2px solid #F7EFEC;
+            border-radius:50px; color:white; font-size:14px; text-decoration:none;
+            display:inline-block; transition:0.3s; text-align:center;
+        }
+        .btn-voltar:hover { background:rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'exercicios' %}">← Exercícios</a>
+        <a href="{% url 'home' %}">Início</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+    <h2>💪 Relaxamento Muscular</h2>
+    <p class="subtitulo">Tensiona e relaxa cada grupo muscular para libertar a tensão acumulada</p>
+
+    <div class="layout">
+
+        <!-- BONECO SVG -->
+        <div class="boneco-container">
+            <p style="color:white; font-size:13px;">Escolhe uma zona abaixo ↓</p>
+            <svg id="boneco" viewBox="0 0 200 430" xmlns="http://www.w3.org/2000/svg">
+
+                <!-- Cabeça -->
+                <circle cx="100" cy="40" r="35" fill="#C7B0A9"/>
+                <circle cx="88" cy="35" r="4" fill="#A2827A"/>
+                <circle cx="112" cy="35" r="4" fill="#A2827A"/>
+                <path d="M88 50 Q100 60 112 50" stroke="#A2827A" stroke-width="2.5" fill="none"/>
+                <!-- Pescoço -->
+                <rect x="90" y="73" width="20" height="18" rx="5" fill="#C7B0A9"/>
+
+                <!-- GRUPO OMBROS -->
+                <g id="grp-ombros">
+                    <ellipse id="hl-ombros" class="hl" cx="100" cy="100" rx="52" ry="16" fill="#C7B0A9"/>
+                </g>
+
+                <!-- Tronco (mais comprido, sem abdómen separado) -->
+                <rect x="68" y="115" width="64" height="90" rx="12" fill="#C7B0A9"/>
+
+                <!-- GRUPO BRAÇO ESQ (animável + highlight) -->
+                <g id="grp-braco-esq">
+                    <rect id="hl-braco-esq" class="hl" x="46" y="118" width="18" height="65" rx="9" fill="#C7B0A9"/>
+                </g>
+
+                <!-- GRUPO BRAÇO DIR (animável + highlight) -->
+                <g id="grp-braco-dir">
+                    <rect id="hl-braco-dir" class="hl" x="136" y="118" width="18" height="65" rx="9" fill="#C7B0A9"/>
+                </g>
+
+                <!-- GRUPO MÃO ESQ -->
+                <g id="grp-mao-esq">
+                    <circle id="hl-mao-esq" class="hl" cx="55" cy="195" r="15" fill="#C7B0A9"/>
+                </g>
+
+                <!-- GRUPO MÃO DIR -->
+                <g id="grp-mao-dir">
+                    <circle id="hl-mao-dir" class="hl" cx="145" cy="195" r="15" fill="#C7B0A9"/>
+                </g>
+
+                <!-- GRUPO PERNA ESQ (tudo iluminado, junto da cintura) -->
+                <g id="grp-perna-esq">
+                    <rect id="hl-perna-esq" class="hl" x="72" y="205" width="24" height="65" rx="12" fill="#C7B0A9"/>
+                    <rect id="hl-perna-esq2" class="hl" x="72" y="267" width="24" height="55" rx="10" fill="#C7B0A9"/>
+                    <ellipse id="hl-pe-esq" class="hl" cx="84" cy="330" rx="20" ry="10" fill="#C7B0A9"/>
+                </g>
+
+                <!-- GRUPO PERNA DIR (tudo iluminado, junto da cintura) -->
+                <g id="grp-perna-dir">
+                    <rect id="hl-perna-dir" class="hl" x="104" y="205" width="24" height="65" rx="12" fill="#C7B0A9"/>
+                    <rect id="hl-perna-dir2" class="hl" x="104" y="267" width="24" height="55" rx="10" fill="#C7B0A9"/>
+                    <ellipse id="hl-pe-dir" class="hl" cx="116" cy="330" rx="20" ry="10" fill="#C7B0A9"/>
+                </g>
+
+            </svg>
+        </div>
+
+        <!-- PAINEL -->
+        <div class="painel">
+            <div class="zonas">
+                <button class="zona-btn" onclick="selecionarZona('ombros', this)">🏋️ Ombros</button>
+                <button class="zona-btn" onclick="selecionarZona('bracos', this)">💪 Braços</button>
+                <button class="zona-btn" onclick="selecionarZona('maos', this)">🤲 Mãos</button>
+                <button class="zona-btn" onclick="selecionarZona('pernas', this)">🦵 Pernas</button>
+            </div>
+
+            <div class="instrucao-card">
+                <h3 id="titulo-zona">Escolhe uma zona</h3>
+                <p id="instrucao-texto">Seleciona uma zona do corpo nos botões acima para começar o exercício.</p>
+                <div id="contador-relax" class="contador-relax" style="display:none">7</div>
+                <div id="fase-badge" style="display:none"></div>
+                <div class="barra" id="barra" style="display:none"><div class="barra-fill" id="barra-fill"></div></div>
+            </div>
+
+            <div class="botoes">
+                <button class="btn btn-iniciar" id="btnIniciar" onclick="iniciar()" style="display:none">▶ Iniciar</button>
+                <button class="btn btn-parar"   id="btnParar"   onclick="parar()"   style="display:none">⏹ Parar</button>
+            </div>
+
+            <a href="{% url 'exercicios' %}" class="btn-voltar">← Voltar aos Exercícios</a>
+        </div>
+    </div>
+</main>
+
+<script>
+    const zonas = {
+        ombros: {
+            titulo: '🏋️ Ombros',
+            instrucao: 'Eleva os ombros em direção às orelhas, tão alto quanto possível. Mantém 7 segundos. Depois deixa cair e relaxa 15 segundos.',
+            highlights: ['hl-ombros'],
+            grupos_tensao: ['grp-ombros'],
+            grupos_relaxa: ['grp-ombros'],
+        },
+        bracos: {
+            titulo: '💪 Braços',
+            instrucao: 'Dobra os cotovelos e aperta os músculos dos braços com força. Mantém 7 segundos. Depois estende e relaxa 15 segundos.',
+            highlights: ['hl-braco-esq', 'hl-braco-dir'],
+            grupos_tensao: ['grp-braco-esq', 'grp-braco-dir'],
+            grupos_relaxa: ['grp-braco-esq', 'grp-braco-dir'],
+        },
+        maos: {
+            titulo: '🤲 Mãos',
+            instrucao: 'Fecha os punhos com muita força. Mantém 7 segundos. Depois abre as mãos completamente e relaxa 15 segundos.',
+            highlights: ['hl-mao-esq', 'hl-mao-dir'],
+            grupos_tensao: ['grp-mao-esq', 'grp-mao-dir'],
+            grupos_relaxa: ['grp-mao-esq', 'grp-mao-dir'],
+        },
+        pernas: {
+            titulo: '🦵 Pernas',
+            instrucao: 'Aperta os músculos das coxas e pernas com força. Mantém 7 segundos. Depois solta e sente o relaxamento 15 segundos.',
+            highlights: ['hl-perna-esq', 'hl-perna-esq2', 'hl-pe-esq', 'hl-perna-dir', 'hl-perna-dir2', 'hl-pe-dir'],
+            grupos_tensao: ['grp-perna-esq', 'grp-perna-dir'],
+            grupos_relaxa: ['grp-perna-esq', 'grp-perna-dir'],
+        },
+    };
+
+    let zonaAtual = null;
+    let intervalo = null;
+    let ativo = false;
+
+    function limparTudo() {
+        document.querySelectorAll('.hl').forEach(el => el.classList.remove('ativa'));
+        Object.values(zonas).forEach(z => {
+            [...z.grupos_tensao, ...z.grupos_relaxa].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.classList.remove('tensao', 'relaxa'); void el.offsetWidth; }
+            });
+        });
+    }
+
+    function selecionarZona(zona, btn) {
+        if (ativo) parar();
+        limparTudo();
+        zonaAtual = zona;
+
+        document.querySelectorAll('.zona-btn').forEach(b => b.classList.remove('ativa'));
+        if (btn) btn.classList.add('ativa');
+
+        // highlight dos dois lados
+        zonas[zona].highlights.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('ativa');
+        });
+
+        document.getElementById('titulo-zona').textContent = zonas[zona].titulo;
+        document.getElementById('instrucao-texto').textContent = zonas[zona].instrucao;
+        document.getElementById('contador-relax').style.display = 'block';
+        document.getElementById('contador-relax').textContent = '7';
+        document.getElementById('barra').style.display = 'block';
+        document.getElementById('barra-fill').style.width = '0%';
+        document.getElementById('fase-badge').style.display = 'none';
+        document.getElementById('btnIniciar').style.display = 'flex';
+        document.getElementById('btnParar').style.display = 'none';
+    }
+
+    function iniciar() {
+        if (!zonaAtual) return;
+        ativo = true;
+        document.getElementById('btnIniciar').style.display = 'none';
+        document.getElementById('btnParar').style.display = 'flex';
+        correrFase('tensao', 7);
+    }
+
+    function correrFase(fase, segundos) {
+        if (!ativo) return;
+        let restantes = segundos;
+        const total = segundos;
+        const z = zonas[zonaAtual];
+
+        // aplicar animação
+        z.grupos_tensao.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.classList.remove('tensao', 'relaxa'); void el.offsetWidth; el.classList.add(fase); }
+        });
+
+        // highlight
+        document.querySelectorAll('.hl').forEach(el => el.classList.remove('ativa'));
+        z.highlights.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('ativa');
+        });
+
+        const badge = document.getElementById('fase-badge');
+        badge.style.display = 'inline-block';
+        if (fase === 'tensao') {
+            badge.className = 'fase-badge fase-tensao';
+            badge.textContent = '🔴 Tensiona!';
+        } else {
+            badge.className = 'fase-badge fase-relaxa';
+            badge.textContent = '🟢 Relaxa...';
+        }
+
+        document.getElementById('contador-relax').textContent = restantes;
+        document.getElementById('barra-fill').style.width = '0%';
+
+        intervalo = setInterval(() => {
+            restantes--;
+            document.getElementById('contador-relax').textContent = restantes;
+            const pct = ((total - restantes) / total) * 100;
+            document.getElementById('barra-fill').style.width = pct + '%';
+            if (restantes <= 0) {
+                clearInterval(intervalo);
+                if (fase === 'tensao') setTimeout(() => correrFase('relaxa', 15), 400);
+                else terminar();
+            }
+        }, 1000);
+    }
+
+    function parar() {
+        ativo = false;
+        clearInterval(intervalo);
+        limparTudo();
+        document.getElementById('btnIniciar').style.display = 'flex';
+        document.getElementById('btnParar').style.display = 'none';
+        document.getElementById('contador-relax').textContent = '7';
+        document.getElementById('barra-fill').style.width = '0%';
+        document.getElementById('fase-badge').style.display = 'none';
+        if (zonaAtual) {
+            zonas[zonaAtual].highlights.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('ativa');
+            });
+        }
+    }
+
+    function terminar() {
+        ativo = false;
+        clearInterval(intervalo);
+        document.getElementById('btnIniciar').style.display = 'flex';
+        document.getElementById('btnParar').style.display = 'none';
+        document.getElementById('contador-relax').textContent = '🌟';
+        document.getElementById('barra-fill').style.width = '100%';
+        const badge = document.getElementById('fase-badge');
+        badge.className = 'fase-badge fase-ok';
+        badge.textContent = '✅ Concluído!';
+        badge.style.display = 'inline-block';
+    }
+</script>
+
+</body>
+</html>

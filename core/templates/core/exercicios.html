@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Exercícios</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a { margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold; }
+        .logout-btn { background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; }
+
+        main { padding:40px 60px; flex:1; }
+        h2 { color:white; font-size:28px; margin-bottom:40px; text-align:center; }
+
+        .cards {
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(220px, 220px));
+            gap:30px;
+            justify-content:center;
+        }
+
+        .card {
+            background:#F7EFEC;
+            border-radius:25px;
+            padding:30px 20px;
+            text-decoration:none;
+            color:#A2827A;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            gap:15px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.1);
+            transition:0.3s;
+        }
+        .card:hover { transform:translateY(-5px); background:#ede0db; }
+        .card .icone { font-size:50px; }
+        .card p { font-weight:bold; font-size:17px; text-align:center; }
+        .card span { font-size:13px; color:#b0908a; text-align:center; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'home' %}">Início</a>
+        <a href="#">Perfil</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+    <h2>Exercícios de Bem-Estar 🧘</h2>
+    <div class="cards">
+
+        <a class="card" href="{% url 'respiracao' %}">
+            <div class="icone">🫁</div>
+            <p>Guia Respiratório</p>
+            <span>Respira fundo e acalma a mente</span>
+        </a>
+
+        <a class="card" href="{% url 'mindfulness' %}">
+            <div class="icone">🧘</div>
+            <p>Mindfulness</p>
+            <span>Fica presente no momento</span>
+        </a>
+
+        <a class="card" href="{% url 'relaxamento' %}">
+            <div class="icone">💪</div>
+            <p>Relaxamento Muscular</p>
+            <span>Liberta a tensão do corpo</span>
+        </a>
+
+        <a class="card" href="{% url 'cinco_sentidos' %}">
+            <div class="icone">✋</div>
+            <p>5 Sentidos</p>
+            <span>Grounding para o momento presente</span>
+        </a>
+
+        <a class="card" href="{% url 'reflexao_dia' %}">
+            <div class="icone">💭</div>
+            <p>Reflexão do Dia</p>
+            <span>Reflete sobre o teu dia</span>
+        </a>
+
+    </div>
+</main>
+
+</body>
+</html>

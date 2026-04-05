@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Associar Psicólogo</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a { margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold; }
+        .logout-btn { background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; }
+
+        main {
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            padding:40px 20px;
+        }
+
+        .card {
+            background:#F7EFEC;
+            border-radius:25px;
+            padding:45px 40px;
+            max-width:500px;
+            width:100%;
+            text-align:center;
+            box-shadow:0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .emoji { font-size:60px; margin-bottom:15px; display:block; }
+        h2 { color:#A2827A; font-size:24px; margin-bottom:10px; }
+        .descricao { color:#b0908a; font-size:14px; line-height:1.7; margin-bottom:30px; }
+
+        .form-grupo { margin-bottom:20px; text-align:left; }
+        .form-grupo label { display:block; font-size:13px; color:#A2827A; font-weight:bold; margin-bottom:8px; }
+        .form-grupo input {
+            width:100%;
+            padding:14px;
+            border-radius:12px;
+            border:none;
+            background:#EDE0DB;
+            font-size:16px;
+            color:#5a3e3a;
+        }
+        .form-grupo input:focus { outline:2px solid #A2827A; }
+
+        .btn-associar {
+            width:100%;
+            padding:14px;
+            background:#A2827A;
+            color:white;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+        .btn-associar:hover { background:#8c6f67; transform:translateY(-2px); }
+
+        .mensagem-sucesso {
+            background:#ccf2cc;
+            color:#27ae60;
+            border-radius:12px;
+            padding:15px;
+            margin-bottom:20px;
+            font-size:15px;
+            font-weight:bold;
+        }
+        .mensagem-erro {
+            background:#ffcccc;
+            color:#c0392b;
+            border-radius:12px;
+            padding:15px;
+            margin-bottom:20px;
+            font-size:15px;
+            font-weight:bold;
+        }
+
+        .btn-voltar {
+            display:block;
+            text-align:center;
+            margin-top:15px;
+            padding:11px;
+            background:transparent;
+            border:2px solid #A2827A;
+            border-radius:50px;
+            color:#A2827A;
+            font-size:14px;
+            text-decoration:none;
+            transition:0.3s;
+        }
+        .btn-voltar:hover { background:#A2827A; color:white; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'home' %}">Início</a>
+        <a href="{% url 'perfil' %}">Perfil</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+    <div class="card">
+        <span class="emoji">🩺</span>
+        <h2>Associar Psicólogo</h2>
+        <p class="descricao">Introduz o email do teu psicólogo para partilhar o teu progresso emocional com ele. Só o teu psicólogo terá acesso às tuas estatísticas.</p>
+
+        {% if sucesso %}
+            <div class="mensagem-sucesso">✅ {{ sucesso }}</div>
+        {% endif %}
+        {% if erro %}
+            <div class="mensagem-erro">❌ {{ erro }}</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-grupo">
+                <label>Email do psicólogo</label>
+                <input type="email" name="email_psicologo" placeholder="exemplo@email.com" required>
+            </div>
+            <button class="btn-associar" type="submit">Associar psicólogo →</button>
+        </form>
+
+        <a href="{% url 'perfil' %}" class="btn-voltar">← Voltar ao perfil</a>
+    </div>
+</main>
+
+</body>
+</html>

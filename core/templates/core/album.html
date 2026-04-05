@@ -1,0 +1,258 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINDLY - Álbum</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
+
+        /* ── HEADER ── */
+        header {
+            background-color:#F7EFEC;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .logo { display:flex; align-items:center; gap:10px; }
+        .logo img { width:45px; }
+        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
+        header nav a {
+            margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold;
+        }
+        .logout-btn {
+            background-color:#A2827A; color:white; padding:8px 16px;
+            border-radius:20px; text-decoration:none; font-weight:bold;
+        }
+
+        /* ── CONTEÚDO ── */
+        main { padding:40px 60px; }
+        h2 { color:white; font-size:28px; margin-bottom:30px; text-align:center; }
+
+        /* ── BOTÃO ADICIONAR ── */
+        .btn-novo {
+            display:block;
+            width:fit-content;
+            margin:0 auto 35px auto;
+            padding:12px 30px;
+            background:#A2827A;
+            color:white;
+            border:none;
+            border-radius:50px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            text-decoration:none;
+            transition:0.3s;
+        }
+        .btn-novo:hover { background:#8c6f67; transform:translateY(-2px); }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display:none;
+            position:fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            background:rgba(0,0,0,0.5);
+            z-index:100;
+            justify-content:center;
+            align-items:center;
+        }
+        .modal-overlay.ativo { display:flex; }
+        .modal {
+            background:#F7EFEC;
+            border-radius:20px;
+            padding:35px;
+            width:90%;
+            max-width:500px;
+            box-shadow:0 8px 25px rgba(0,0,0,0.2);
+        }
+        .modal h3 { color:#A2827A; font-size:22px; margin-bottom:20px; text-align:center; }
+
+        .upload-area {
+            border:2px dashed #A2827A;
+            border-radius:15px;
+            padding:30px;
+            text-align:center;
+            margin-bottom:15px;
+            cursor:pointer;
+            transition:0.2s;
+            background:#f0e6e2;
+        }
+        .upload-area:hover { background:#e8d9d5; }
+        .upload-area span { font-size:40px; display:block; margin-bottom:8px; }
+        .upload-area p { color:#A2827A; font-size:14px; }
+        .upload-area input[type="file"] { display:none; }
+
+        .modal input[type="text"] {
+            width:100%;
+            padding:12px;
+            border-radius:12px;
+            border:none;
+            background:#EDE0DB;
+            font-size:15px;
+            margin-bottom:15px;
+            color:#5a3e3a;
+        }
+        .modal input:focus { outline:2px solid #A2827A; }
+
+        .modal-botoes { display:flex; gap:10px; }
+        .btn-guardar {
+            flex:1; padding:12px; background:#A2827A; color:white;
+            border:none; border-radius:50px; font-size:16px;
+            font-weight:bold; cursor:pointer; transition:0.3s;
+        }
+        .btn-guardar:hover { background:#8c6f67; }
+        .btn-cancelar {
+            flex:1; padding:12px; background:#ccc; color:#555;
+            border:none; border-radius:50px; font-size:16px;
+            font-weight:bold; cursor:pointer; transition:0.3s;
+        }
+        .btn-cancelar:hover { background:#bbb; }
+
+        /* ── GRELHA DE FOTOS ── */
+        .album-grelha {
+            display:grid;
+            grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+            gap:20px;
+            max-width:1000px;
+            margin:0 auto;
+        }
+        .foto-card {
+            background:#F7EFEC;
+            border-radius:20px;
+            overflow:hidden;
+            box-shadow:0 4px 12px rgba(0,0,0,0.15);
+            position:relative;
+            transition:0.3s;
+        }
+        .foto-card:hover { transform:scale(1.02); }
+        .foto-card img {
+            width:100%;
+            height:200px;
+            object-fit:cover;
+            display:block;
+        }
+        .foto-info {
+            padding:12px 15px;
+        }
+        .foto-info .legenda {
+            font-size:14px;
+            color:#6b4f4b;
+            margin-bottom:4px;
+        }
+        .foto-info .data {
+            font-size:11px;
+            color:#b0908a;
+        }
+        .btn-apagar-foto {
+            position:absolute;
+            top:10px; right:10px;
+            background:rgba(255,255,255,0.85);
+            border:none;
+            border-radius:50%;
+            width:32px; height:32px;
+            font-size:16px;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            transition:0.2s;
+            text-decoration:none;
+        }
+        .btn-apagar-foto:hover { background:white; transform:scale(1.1); }
+
+        .sem-fotos {
+            text-align:center;
+            color:white;
+            font-size:18px;
+            margin-top:20px;
+            opacity:0.8;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="logo">
+        <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
+        <h1>MINDLY</h1>
+    </div>
+    <nav>
+        <a href="{% url 'home' %}">Início</a>
+        <a href="#">Perfil</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Sair</button>
+</form>
+    </nav>
+</header>
+
+<main>
+    <h2>O meu Álbum 📷</h2>
+
+    <!-- BOTÃO ABRIR MODAL -->
+    <button class="btn-novo" onclick="abrirModal()">+ Adicionar Foto</button>
+
+    <!-- MODAL UPLOAD -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h3>Adicionar Foto</h3>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="upload-area" onclick="document.getElementById('inputFoto').click()">
+                    <span>📁</span>
+                    <p>Clica para escolher uma foto</p>
+                    <input type="file" id="inputFoto" name="imagem" accept="image/*" required onchange="mostrarNome(this)">
+                </div>
+                <p id="nomeFicheiro" style="text-align:center; color:#A2827A; font-size:13px; margin-bottom:12px;"></p>
+                <input type="text" name="legenda" placeholder="Legenda (opcional)...">
+                <div class="modal-botoes">
+                    <button class="btn-guardar" type="submit">Guardar</button>
+                    <button class="btn-cancelar" type="button" onclick="fecharModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- GRELHA DE FOTOS -->
+    {% if fotos %}
+        <div class="album-grelha">
+            {% for foto in fotos %}
+                <div class="foto-card">
+                    <img src="{{ foto.imagem.url }}" alt="{{ foto.legenda }}">
+                    <div class="foto-info">
+                        {% if foto.legenda %}<div class="legenda">{{ foto.legenda }}</div>{% endif %}
+                        <div class="data">{{ foto.data|date:"d/m/Y" }}</div>
+                    </div>
+                    <a href="{% url 'apagar_foto' foto.pk %}" class="btn-apagar-foto" title="Apagar">🗑️</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="sem-fotos">Ainda não tens fotos no álbum. Adiciona a tua primeira memória! 📸</p>
+    {% endif %}
+</main>
+
+<script>
+    function abrirModal() {
+        document.getElementById('modalOverlay').classList.add('ativo');
+    }
+    function fecharModal() {
+        document.getElementById('modalOverlay').classList.remove('ativo');
+    }
+    function mostrarNome(input) {
+        const nome = input.files[0]?.name || '';
+        document.getElementById('nomeFicheiro').textContent = nome ? '📎 ' + nome : '';
+    }
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) fecharModal();
+    });
+</script>
+
+</body>
+</html>
