@@ -341,15 +341,19 @@ def reflexao_dia(request):
 # ──────────────────────────────────────────
 # SIGNUP
 # ──────────────────────────────────────────
+from .forms import RegistoHumorForm, EntradaDiarioForm, FotoAlbumForm, PerfilForm, UserForm, RegistoForm
+
 def signup(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegistoForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.email = form.cleaned_data['email']
+            user.save()
             login(request, user)
             return redirect('home')
     else:
-        form = UserCreationForm()
+        form = RegistoForm()
     return render(request, 'core/singup.html', {'form': form})
 
 from django.db.models import Avg

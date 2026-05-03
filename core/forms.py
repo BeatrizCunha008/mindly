@@ -1,16 +1,12 @@
-from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import RegistoHumor, EntradaDiario, FotoAlbum, Perfil
 
+class RegistoForm(UserCreationForm):
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'Email'}))
 
-class RegistoHumorForm(forms.ModelForm):
     class Meta:
-        model  = RegistoHumor
-        fields = ['humor', 'nota']
-        widgets = {
-            'humor': forms.RadioSelect(),
-            'nota':  forms.Textarea(attrs={'rows': 3, 'placeholder': 'Como te estás a sentir? (opcional)'}),
-        }
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
 
 
 class EntradaDiarioForm(forms.ModelForm):
