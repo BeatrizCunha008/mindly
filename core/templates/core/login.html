@@ -18,7 +18,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
             color: #fff;
         }
 
@@ -27,7 +28,7 @@
             padding: 40px;
             border-radius: 15px;
             width: 90%;
-            max-width: 400px;
+            max-width: 420px;
             text-align: center;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
@@ -35,19 +36,49 @@
         .login-container h1 {
             margin-bottom: 30px;
             color: #FFD700;
+            font-size: 28px;
+            letter-spacing: 2px;
         }
 
         form {
             display: flex;
             flex-direction: column;
+            gap: 16px;
         }
 
-        input {
-            padding: 12px;
-            margin-bottom: 20px;
+        /* linha com label + input lado a lado */
+        .campo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .campo label {
+            font-size: 14px;
+            color: #ccc;
+            white-space: nowrap;
+            width: 110px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .campo input {
+            flex: 1;
+            padding: 11px 14px;
             border-radius: 10px;
             border: none;
-            font-size: 16px;
+            font-size: 15px;
+            background: #fff;
+            color: #333;
+        }
+
+        .errorlist {
+            color: #ff6b6b;
+            font-size: 12px;
+            list-style: none;
+            text-align: left;
+            padding-left: 122px;
+            margin-top: -8px;
         }
 
         button {
@@ -60,6 +91,7 @@
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-top: 4px;
         }
 
         button:hover {
@@ -68,10 +100,11 @@
         }
 
         .signup-link {
-            margin-top: 15px;
+            margin-top: 14px;
             display: block;
             color: #fff;
             text-decoration: underline;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -80,7 +113,36 @@
         <h1>MINDLY</h1>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+
+            <!-- Utilizador -->
+            <div class="campo">
+                <label for="{{ form.username.id_for_label }}">Utilizador:</label>
+                {{ form.username }}
+            </div>
+            {% if form.username.errors %}
+                <ul class="errorlist">
+                    {% for erro in form.username.errors %}<li>{{ erro }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- Palavra-passe -->
+            <div class="campo">
+                <label for="{{ form.password.id_for_label }}">Palavra-passe:</label>
+                {{ form.password }}
+            </div>
+            {% if form.password.errors %}
+                <ul class="errorlist">
+                    {% for erro in form.password.errors %}<li>{{ erro }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- Erros gerais (credenciais inválidas) -->
+            {% if form.non_field_errors %}
+                <ul class="errorlist" style="padding-left:0; text-align:center;">
+                    {% for erro in form.non_field_errors %}<li>{{ erro }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+
             <button type="submit">Entrar</button>
         </form>
         <a class="signup-link" href="{% url 'signup' %}">Criar conta</a>

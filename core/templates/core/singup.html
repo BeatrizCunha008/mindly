@@ -49,37 +49,45 @@
             text-align: left;
         }
 
-        /* estilo para os campos gerados pelo Django */
-        form p label {
+        .campo label {
             font-size: 13px;
             color: #ccc;
             margin-bottom: 4px;
             display: block;
         }
 
-        form p input {
+        .campo input {
             width: 100%;
             padding: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 6px;
             border-radius: 10px;
             border: none;
             font-size: 16px;
         }
 
-        /* texto de ajuda do Django (requisitos da password) */
-        form p ul {
+        .campo input.erro-input {
+            border: 2px solid #ff6b6b;
+        }
+
+        /* erros de validação */
+        .errorlist {
+            color: #ff6b6b;
+            font-size: 12px;
+            list-style: none;
+            margin-bottom: 10px;
+            padding-left: 4px;
+        }
+
+        /* requisitos da password — só aparecem quando há erro */
+        .help-text {
             font-size: 11px;
             color: #aaa;
             margin-bottom: 10px;
             padding-left: 15px;
         }
 
-        /* erros */
-        .errorlist {
-            color: #ff6b6b;
-            font-size: 12px;
-            list-style: none;
-            margin-bottom: 8px;
+        .help-text li {
+            margin-bottom: 2px;
         }
 
         button {
@@ -115,7 +123,66 @@
         <p>Cria a tua conta</p>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+
+            <!-- Username -->
+            <div class="campo">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}:</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <ul class="errorlist">
+                        {% for erro in form.username.errors %}
+                            <li>{{ erro }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="campo">
+                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}:</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <ul class="errorlist">
+                        {% for erro in form.email.errors %}
+                            <li>{{ erro }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Palavra-passe -->
+            <div class="campo">
+                <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}:</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <ul class="errorlist">
+                        {% for erro in form.password1.errors %}
+                            <li>{{ erro }}</li>
+                        {% endfor %}
+                    </ul>
+                    <!-- requisitos só aparecem se houver erro -->
+                    <ul class="help-text">
+                        <li>A palavra-passe não pode ser similar ao teu nome ou email.</li>
+                        <li>Deve ter pelo menos 8 caracteres.</li>
+                        <li>Não pode ser uma palavra-passe muito comum.</li>
+                        <li>Não pode ser inteiramente numérica.</li>
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Confirmação da palavra-passe -->
+            <div class="campo">
+                <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}:</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <ul class="errorlist">
+                        {% for erro in form.password2.errors %}
+                            <li>{{ erro }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
             <button type="submit">Criar conta</button>
         </form>
         <a class="login-link" href="{% url 'login' %}">Já tens conta? Entra aqui</a>

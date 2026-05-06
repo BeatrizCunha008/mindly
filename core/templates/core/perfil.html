@@ -5,224 +5,315 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MINDLY - Perfil</title>
+
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
-        body { background-color:#B79F97; min-height:100vh; display:flex; flex-direction:column; }
-
-        header {
-            background-color:#F7EFEC;
-            padding:20px 40px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
+        :root {
+            --cream:   #F7EFEC;
+            --rose:    #A2827A;
+            --rose-dk: #8c6f67;
+            --rose-lt: #EDE0DB;
+            --bg:      #B79F97;
+            --text-dk: #4a3330;
         }
-        .logo { display:flex; align-items:center; gap:10px; }
-        .logo img { width:45px; }
-        .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
-        header nav a { margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold; }
-        .logout-btn { background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; }
 
-        main { flex:1; padding:40px 20px; max-width:700px; margin:0 auto; width:100%; }
-        h2 { color:white; font-size:28px; margin-bottom:30px; text-align:center; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background-color: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        }
 
-        /* ── FOTO E NOME ── */
+        /* ── HEADER ── */
+        header {
+            background-color: var(--cream);
+            padding: 0 48px;
+            height: 68px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .logo img { width: 38px; }
+        .logo h1 {
+            font-family: Arial, sans-serif;
+            font-size: 22px;
+            color: var(--rose);
+            letter-spacing: 2px;
+        }
+        header nav { display: flex; align-items: center; gap: 6px; }
+        header nav a {
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--rose);
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: background 0.2s;
+        }
+        header nav a:hover { background: var(--rose-lt); }
+
+        /* ── MAIN ── */
+        main {
+            flex: 1;
+            padding: 40px 20px 60px;
+            max-width: 720px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-title {
+            font-family: Arial, sans-serif;
+            color: white;
+            font-size: 26px;
+            margin-bottom: 28px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* ── TOPO PERFIL ── */
         .perfil-topo {
-            background:#F7EFEC;
-            border-radius:25px;
-            padding:35px;
-            text-align:center;
-            margin-bottom:25px;
-            box-shadow:0 4px 15px rgba(0,0,0,0.1);
+            background: var(--cream);
+            border-radius: 24px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.1);
         }
         .foto-container {
-            position:relative;
-            width:110px;
-            height:110px;
-            margin:0 auto 15px auto;
-            cursor:pointer;
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 14px;
+            cursor: pointer;
         }
         .foto-perfil {
-            width:110px;
-            height:110px;
-            border-radius:50%;
-            object-fit:cover;
-            border:4px solid #A2827A;
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--rose);
         }
         .foto-placeholder {
-            width:110px;
-            height:110px;
-            border-radius:50%;
-            background:#EDE0DB;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:45px;
-            border:4px solid #A2827A;
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            background: var(--rose-lt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            border: 3px solid var(--rose);
         }
         .foto-overlay {
-            position:absolute;
-            bottom:0; right:0;
-            background:#A2827A;
-            border-radius:50%;
-            width:32px; height:32px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:16px;
-            cursor:pointer;
+            position: absolute;
+            bottom: 0; right: 0;
+            background: var(--rose);
+            border-radius: 50%;
+            width: 30px; height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
         }
-        .nome-perfil { font-size:22px; font-weight:bold; color:#A2827A; margin-bottom:5px; }
-        .username-perfil { font-size:15px; color:#b0908a; margin-bottom:10px; }
+        .nome-perfil {
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            color: var(--rose);
+            margin-bottom: 4px;
+        }
+        .username-perfil { font-size: 14px; color: #b0908a; margin-bottom: 10px; }
         .tipo-badge {
-            display:inline-block;
-            padding:5px 15px;
-            border-radius:20px;
-            font-size:13px;
-            font-weight:bold;
-            background:#EDE0DB;
-            color:#A2827A;
+            display: inline-block;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--rose-lt);
+            color: var(--rose);
+            letter-spacing: 0.5px;
         }
 
-        /* ── STATS RÁPIDAS ── */
+        /* ── STATS ── */
         .stats {
-            display:grid;
-            grid-template-columns:repeat(3, 1fr);
-            gap:15px;
-            margin-bottom:25px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
         }
         .stat-card {
-            background:#F7EFEC;
-            border-radius:20px;
-            padding:20px;
-            text-align:center;
-            box-shadow:0 4px 12px rgba(0,0,0,0.08);
+            background: var(--cream);
+            border-radius: 20px;
+            padding: 20px 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        .stat-card .num { font-size:32px; font-weight:bold; color:#A2827A; }
-        .stat-card .desc { font-size:12px; color:#b0908a; margin-top:4px; }
-        .stat-card .icone { font-size:22px; margin-bottom:5px; display:block; }
+        .stat-card .icone { font-size: 20px; margin-bottom: 6px; display: block; }
+        .stat-card .num { font-family: Arial, sans-serif; font-size: 30px; color: var(--rose); font-weight: 700; }
+        .stat-card .desc { font-size: 11px; color: #b0908a; margin-top: 3px; font-weight: 500; }
 
-        /* ── FORMULÁRIO ── */
+        /* ── FORM CARD ── */
         .form-card {
-            background:#F7EFEC;
-            border-radius:25px;
-            padding:35px;
-            box-shadow:0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom:25px;
+            background: var(--cream);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
         }
-        .form-card h3 { color:#A2827A; font-size:18px; margin-bottom:20px; font-weight:bold; }
-
-        .form-grupo { margin-bottom:18px; }
+        .form-card h3 {
+            color: var(--rose);
+            font-size: 16px;
+            margin-bottom: 22px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .form-grupo { margin-bottom: 16px; }
         .form-grupo label {
-            display:block;
-            font-size:13px;
-            color:#A2827A;
-            font-weight:bold;
-            margin-bottom:6px;
+            display: block;
+            font-size: 12px;
+            color: var(--rose);
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
         }
         .form-grupo input,
         .form-grupo select {
-            width:100%;
-            padding:12px;
-            border-radius:12px;
-            border:none;
-            background:#EDE0DB;
-            font-size:15px;
-            color:#5a3e3a;
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 12px;
+            border: none;
+            background: var(--rose-lt);
+            font-size: 14px;
+            color: var(--text-dk);
+            font-family: Arial, sans-serif;
+            transition: outline 0.15s;
         }
         .form-grupo input:focus,
-        .form-grupo select:focus { outline:2px solid #A2827A; }
+        .form-grupo select:focus { outline: 2px solid var(--rose); }
 
-        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
         .btn-guardar {
-            width:100%;
-            padding:13px;
-            background:#A2827A;
-            color:white;
-            border:none;
-            border-radius:50px;
-            font-size:16px;
-            font-weight:bold;
-            cursor:pointer;
-            transition:0.3s;
-            margin-top:5px;
+            width: 100%;
+            padding: 13px;
+            background: var(--rose);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.25s;
+            margin-top: 6px;
+            font-family: Arial, sans-serif;
         }
-        .btn-guardar:hover { background:#8c6f67; transform:translateY(-2px); }
+        .btn-guardar:hover { background: var(--rose-dk); transform: translateY(-2px); }
 
-        /* alterar password */
-        .btn-password {
-            display:block;
-            text-align:center;
-            padding:13px;
-            background:transparent;
-            border:2px solid #A2827A;
-            border-radius:50px;
-            color:#A2827A;
-            font-size:15px;
-            font-weight:bold;
-            text-decoration:none;
-            transition:0.3s;
-            margin-bottom:25px;
+        /* ── BOTÕES EXTRA ── */
+        .btn-outline {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            background: transparent;
+            border: 2px solid var(--rose);
+            border-radius: 50px;
+            color: var(--rose);
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.25s;
+            margin-bottom: 14px;
+            font-family: Arial, sans-serif;
         }
-        .btn-password:hover { background:#A2827A; color:white; }
+        .btn-outline:hover { background: var(--rose); color: white; }
+
+        .btn-sair {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            background: transparent;
+            border: 2px solid var(--rose);
+            border-radius: 50px;
+            color: var(--rose);
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.25s;
+            margin-bottom: 14px;
+            cursor: pointer;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+        .btn-sair:hover { background: var(--rose); color: white; }
 
         .btn-voltar {
-            display:block;
-            text-align:center;
-            padding:11px;
-            background:transparent;
-            border:2px solid #F7EFEC;
-            border-radius:50px;
-            color:white;
-            font-size:14px;
-            text-decoration:none;
-            transition:0.3s;
+            display: block;
+            text-align: center;
+            padding: 12px;
+            background: transparent;
+            border: 2px solid var(--rose);
+            border-radius: 50px;
+            color: var(--rose);
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.25s;
+            font-family: Arial, sans-serif;
         }
-        .btn-voltar:hover { background:rgba(255,255,255,0.1); }
+        .btn-voltar:hover { background: var(--rose); color: white; }
 
-        /* input file escondido */
-        #inputFoto { display:none; }
+        #inputFoto { display: none; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">
+    <a href="{% url 'home' %}" class="logo">
         <img src="{% static 'core/imagens/logo.PNG' %}" alt="logo">
         <h1>MINDLY</h1>
-    </div>
+    </a>
     <nav>
-        <a href="{% url 'home' %}">Início</a>
+        <a href="{% url 'home' %}">← Início</a>
         <a href="{% url 'estatisticas' %}">Estatísticas</a>
-        <form method="post" action="{% url 'logout' %}" style="display:inline;">
-    {% csrf_token %}
-    <button type="submit" class="logout-btn">Sair</button>
-</form>
     </nav>
 </header>
 
 <main>
-    <h2>👤 O meu Perfil</h2>
+    <h2 class="page-title">O meu Perfil</h2>
 
-    <!-- TOPO COM FOTO E NOME -->
-<div class="perfil-topo">
-    <div class="foto-container" onclick="document.getElementById('inputFoto').click()">
-        {% if perfil.foto_perfil %}
-            <img src="{{ perfil.foto_perfil.url }}" alt="Foto de perfil" class="foto-perfil">
-        {% else %}
-            <div class="foto-placeholder">👤</div>
-        {% endif %}
-        <div class="foto-overlay">📷</div>
+    <!-- FOTO E NOME -->
+    <div class="perfil-topo">
+        <div class="foto-container" onclick="document.getElementById('inputFoto').click()">
+            {% if perfil.foto_perfil %}
+                <img src="{{ perfil.foto_perfil.url }}" alt="Foto de perfil" class="foto-perfil">
+            {% else %}
+                <div class="foto-placeholder">👤</div>
+            {% endif %}
+            <div class="foto-overlay">📷</div>
+        </div>
+        <form method="post" enctype="multipart/form-data" id="formFoto">
+            {% csrf_token %}
+            <input type="file" id="inputFoto" name="foto_perfil" accept="image/*"
+                   onchange="document.getElementById('formFoto').submit()">
+        </form>
+        <div class="nome-perfil">
+            {% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}
+            {% else %}{{ request.user.username }}{% endif %}
+        </div>
+        <div class="username-perfil">@{{ request.user.username }}</div>
+        <span class="tipo-badge">{{ perfil.get_tipo_display }}</span>
     </div>
 
-    <form method="post" enctype="multipart/form-data" id="formFoto">
-        {% csrf_token %}
-        <input type="file" id="inputFoto" name="foto_perfil" accept="image/*"
-               style="display:none" onchange="document.getElementById('formFoto').submit()">
-    </form>
-
-
-    <!-- STATS RÁPIDAS -->
+    <!-- STATS -->
     <div class="stats">
         <div class="stat-card">
             <span class="icone">😊</span>
@@ -241,12 +332,11 @@
         </div>
     </div>
 
-    <!-- FORMULÁRIO DE EDIÇÃO -->
+    <!-- FORMULÁRIO -->
     <div class="form-card">
         <h3>✏️ Editar informações</h3>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-
             <div class="form-row">
                 <div class="form-grupo">
                     <label>Nome</label>
@@ -257,46 +347,46 @@
                     <input type="text" name="last_name" value="{{ request.user.last_name }}" placeholder="Apelido">
                 </div>
             </div>
-
             <div class="form-grupo">
                 <label>Email</label>
                 <input type="email" name="email" value="{{ request.user.email }}" placeholder="Email">
             </div>
-
             <div class="form-row">
                 <div class="form-grupo">
                     <label>Telefone (opcional)</label>
                     <input type="text" name="telefone" value="{{ perfil.telefone|default:'' }}" placeholder="+351 912 345 678">
                 </div>
                 <div class="form-grupo">
-                    <label>Data de nascimento (opcional)</label>
+                    <label>Data de nascimento</label>
                     <input type="date" name="data_nasc" value="{{ perfil.data_nasc|date:'Y-m-d'|default:'' }}">
                 </div>
             </div>
-
             <div class="form-grupo">
                 <label>Tipo de conta</label>
                 <select name="tipo">
-                    <option value="livre" {% if perfil.tipo == 'livre' %}selected{% endif %}>Utilizador Livre</option>
-                    <option value="paciente" {% if perfil.tipo == 'paciente' %}selected{% endif %}>Paciente</option>
+                    <option value="livre"     {% if perfil.tipo == 'livre' %}selected{% endif %}>Utilizador Livre</option>
+                    <option value="paciente"  {% if perfil.tipo == 'paciente' %}selected{% endif %}>Paciente</option>
                     <option value="psicologo" {% if perfil.tipo == 'psicologo' %}selected{% endif %}>Psicólogo</option>
                 </select>
             </div>
-
             <button class="btn-guardar" type="submit">💾 Guardar alterações</button>
         </form>
     </div>
 
     {% if perfil.tipo == 'paciente' %}
-    <a href="{% url 'associar_psicologo' %}" class="btn-password">🩺 Associar Psicólogo</a>
+    <a href="{% url 'associar_psicologo' %}" class="btn-outline">🩺 Associar Psicólogo</a>
     {% endif %}
-
     {% if perfil.tipo == 'psicologo' %}
-    <a href="{% url 'painel_psicologo' %}" class="btn-password">🩺 Painel do Psicólogo</a>
+    <a href="{% url 'painel_psicologo' %}" class="btn-outline">🩺 Painel do Psicólogo</a>
     {% endif %}
 
-    <!-- ALTERAR PASSWORD -->
-    <a href="{% url 'password_change' %}" class="btn-password">🔒 Alterar palavra-passe</a>
+    <a href="{% url 'password_change' %}" class="btn-outline">🔒 Alterar palavra-passe</a>
+
+    <!-- SAIR — movido do header para aqui -->
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-sair">🚪 Sair da conta</button>
+    </form>
 
     <a href="{% url 'home' %}" class="btn-voltar">← Voltar ao Início</a>
 </main>
