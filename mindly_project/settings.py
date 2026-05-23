@@ -123,3 +123,11 @@ DATABASES['default'] = dj_database_url.config(
     default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
     conn_max_age=600
 )
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = '5482@eclisboa.net'
+EMAIL_HOST_PASSWORD = 'xfnb efli nqif zqwp'
+DEFAULT_FROM_EMAIL = '5482@eclisboa.net'

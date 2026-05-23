@@ -1,4 +1,3 @@
-// MINDLY - Traduções PT/EN
 const traducoes = {
     pt: {
         // HOME
