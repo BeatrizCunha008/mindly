@@ -106,6 +106,15 @@
             text-decoration: underline;
             font-size: 14px;
         }
+
+        .forgot-link {
+            display: block;
+            color: #ccc;
+            ext-decoration: none;
+            font-size: 13px;
+            margin-top: -4px;
+        }
+        .forgot-link:hover { color: #FFD700; }
     </style>
 </head>
 <body>
@@ -144,6 +153,8 @@
             {% endif %}
 
             <button type="submit">Entrar</button>
+
+            <a class="forgot-link" href="{% url 'password_reset' %}">Esqueci a palavra-passe</a>
         </form>
         <a class="signup-link" href="{% url 'signup' %}">Criar conta</a>
     </div>
