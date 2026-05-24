@@ -225,6 +225,54 @@
             transform: translateY(-4px);
             box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
+        /* ── MOBILE ── */
+        @media (max-width: 600px) {
+            header {
+            padding: 0 20px;
+            height: 60px;
+        }
+            header nav a {
+            font-size: 13px;
+            padding: 6px 10px;
+        }
+        .btn-idioma {
+            padding: 4px 9px;
+            font-size: 11px;
+        }
+        main {
+            padding: 28px 20px 40px;
+        }
+        .saudacao {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+        .frase-do-dia {
+            padding: 20px 22px;
+            margin-bottom: 30px;
+        }
+        .frase-texto {
+            font-size: 15px;
+        }
+        .cards {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .cards .card:last-child {
+            grid-column: span 2;
+            max-width: 50%;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .card {
+            padding: 22px 10px;
+        }
+        .card img {
+            width: 34px;
+        }
+        .card p {
+            font-size: 12px;
+        }
+    }
     </style>
 </head>
 <body>
