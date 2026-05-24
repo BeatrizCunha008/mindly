@@ -21,7 +21,6 @@
         .logo img { width:45px; }
         .logo h1 { font-size:26px; color:#A2827A; font-weight:bold; }
         header nav a { margin-left:40px; text-decoration:none; font-size:18px; color:#A2827A; font-weight:bold; }
-        .logout-btn { background-color:#A2827A; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:bold; }
 
         main { flex:1; padding:40px 40px; max-width:1000px; margin:0 auto; width:100%; }
 
@@ -115,10 +114,6 @@
     <nav>
         <a href="{% url 'home' %}">Início</a>
         <a href="{% url 'perfil' %}">Perfil</a>
-        <form method="post" action="{% url 'logout' %}" style="display:inline;">
-    {% csrf_token %}
-    <button type="submit" class="logout-btn">Sair</button>
-</form>
     </nav>
 </header>
 
